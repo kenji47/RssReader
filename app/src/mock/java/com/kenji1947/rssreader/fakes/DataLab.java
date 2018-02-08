@@ -22,7 +22,7 @@ import java.util.UUID;
 public class DataLab {
     private static Map<String, Feed> feedMap = new LinkedHashMap<>();
 
-    public static int DEFAULT_ARTICLES_NUMBER = 100;
+    public static int DEFAULT_ARTICLES_NUMBER = 15;
 
     static long time = System.currentTimeMillis();
 
@@ -48,7 +48,7 @@ public class DataLab {
 
     public static void clearAllData() {
         feedMap.clear();
-        DEFAULT_ARTICLES_NUMBER = 100;
+        DEFAULT_ARTICLES_NUMBER = 15;
     }
 
     public static List<Feed> generateFeeds(int feedsCount, int articlesCount) {

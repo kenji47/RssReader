@@ -69,7 +69,7 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
     public void onFirstViewAttach() {
         Timber.d("onFirstViewAttach");
         //getBackgroundFeedUpdatesStatus();
-        observeShouldUpdateFeedsInBackground();
+        //observeShouldUpdateFeedsInBackground();
         //getAllFeeds();
         getAllFeedsObserve();
         //updateAllFeeds(); //TODO Повесить на рефреш?
@@ -117,10 +117,7 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
     public void getAllFeedsObserve() {
         Timber.d("getAllFeedsObserve");
         compositeDisposable.add(feedCrudInteractor.getFeedsAndObserve()
-                .map(newList -> {
-                    Timber.d("getAllFeedsObserve thread: " + Thread.currentThread().getName());
-                    return DiffCalculator.calculateFeedListDiff(newList, feeds);
-                })
+                .map(newList -> DiffCalculator.calculateFeedListDiff(newList, feeds)) //TODO Move to DI
                 .doOnSubscribe(disposable -> getViewState().showProgress(true)) //TODO
                 .observeOn(schedulersProvider.getMain())
                 .subscribe(this::onGetAllFeedsObservableSuccess, this::onGetAllFeedsError));

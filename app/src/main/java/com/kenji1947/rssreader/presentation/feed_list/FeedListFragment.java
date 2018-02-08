@@ -325,6 +325,8 @@ public class FeedListFragment extends MvpAppCompatFragment implements FeedListVi
     public void showFeedObservableSubscriptions(ListDataDiffHolder<Feed> dataDiffHolder) {
         feeds = dataDiffHolder.getList();
         adapter.updateData(dataDiffHolder.getList());
+        //adapter.notifyDataSetChanged();
+
         if (dataDiffHolder.getDiffResult() == null)
             adapter.notifyDataSetChanged();
         else

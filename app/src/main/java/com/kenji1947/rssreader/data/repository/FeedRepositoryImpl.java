@@ -74,7 +74,7 @@ public class FeedRepositoryImpl implements FeedRepository {
     @Override
     public Observable<List<Feed>> getFeedsAndObserve() {
         Timber.d("getFeeds");
-        return feedDao.getFeedsAndObserve();
+        return feedDao.getFeedsAndObserve().subscribeOn(schedulersProvider.getIo());
     }
 
     @Override
@@ -83,7 +83,6 @@ public class FeedRepositoryImpl implements FeedRepository {
                 .deleteFeed(feedId)
                 .subscribeOn(schedulersProvider.getIo());
     }
-
 
     @Override
     public Completable saveArticlesForFeed(long feedId, List<Article> articles) {

@@ -79,17 +79,17 @@ public class FeedUpdateInteractor {
                 .flatMap(feed -> feedRepository
                         .saveArticlesForFeed(feed.id, feed.articles)
                         .toSingleDefault(feed.articles.size())
-                        .onErrorReturn(throwable -> {return 0;})
+                        //.onErrorReturn(throwable -> {return 0;})
                         .toObservable())
-                .reduce((integer, integer2) -> integer + integer2).toSingle();
-//                .toList()
-//                .map(integers -> {
-//                    int updatedArticlesSummary = 0;
-//                    for (int updated : integers) {
-//                        updatedArticlesSummary += updated;
-//                    }
-//                    return updatedArticlesSummary;
-//                });
+                //.reduce((integer, integer2) -> integer + integer2).toSingle(); //TODO Not working
+                .toList()
+                .map(integers -> {
+                    int updatedArticlesSummary = 0;
+                    for (int updated : integers) {
+                        updatedArticlesSummary += updated;
+                    }
+                    return updatedArticlesSummary;
+                });
     }
 
 

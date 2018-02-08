@@ -1,6 +1,7 @@
 package com.kenji1947.rssreader.util;
 
 import android.content.res.Resources;
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,10 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+
+import java.util.concurrent.TimeUnit;
+
+import timber.log.Timber;
 
 /**
  * Created by chamber on 20.12.2017.
@@ -150,11 +155,16 @@ public class MyMatcher {
                     if (childView == null) {
                         RecyclerView recyclerView = view.getRootView().findViewById(recyclerId);
                         if (recyclerView != null) {
+                            Timber.d("RV getChildCount: " + recyclerView.getChildCount() + " thread " +
+                            Thread.currentThread().getName());
+                            Timber.d("RV getAdapter().getItemCount(): " + recyclerView.getAdapter().getItemCount());
                             for (int i = 0; i < recyclerView.getChildCount(); i++) {
+                                Timber.d("withTextWithId " + i);
                                 RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(i);
                                 TextView textView = holder.itemView.findViewById(textViewId);
                                 if (textView.getText().toString().equals(text)) {
                                     childView = holder.itemView.findViewById(targetViewId);
+                                    break;
                                 }
                             }
                         }
@@ -187,7 +197,7 @@ public class MyMatcher {
                 if (childView == null) {
                     RecyclerView recyclerView = view.getRootView().findViewById(recyclerId);
                     if (recyclerView != null) {
-                        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+                        for (int i = 0; i < recyclerView.getAdapter().getItemCount(); i++) {
                             RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(i);
                             TextView textView = holder.itemView.findViewById(textViewId);
                             if (textView.getText().toString().equals(text)) {

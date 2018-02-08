@@ -29,7 +29,7 @@ public class FeedServiceFake implements FeedApiService {
 
             case RETURN_NEW_ARTICLES: {
                 Timber.d("RETURN_NEW_ARTICLES");
-                return Single.just(DataLab.generateFeedWithNewArticles(feedUrl, 1000));
+                return Single.just(DataLab.generateFeedWithNewArticles(feedUrl, 3));
             }
 
             case RETURN_SAME_FEED: return Single.just(DataLab.generateFeed(feedUrl));

@@ -11,6 +11,9 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class SchedulersTrampoline implements SchedulersProvider {
+
+    //TODO trampoline ведет себя странно. Виснет намертво
+
     @Override
     public Scheduler getMain() {
 
@@ -20,25 +23,25 @@ public class SchedulersTrampoline implements SchedulersProvider {
 
     @Override
     public Scheduler getComputation() {
-        //return Schedulers.trampoline();
-        return AndroidSchedulers.mainThread();
+        return Schedulers.trampoline();
+        //return AndroidSchedulers.mainThread();
     }
 
     @Override
     public Scheduler getTrampoline() {
-        //return Schedulers.trampoline();
-        return AndroidSchedulers.mainThread();
+        return Schedulers.trampoline();
+        //return AndroidSchedulers.mainThread();
     }
 
     @Override
     public Scheduler getNewThread() {
-        //return Schedulers.trampoline();
-        return AndroidSchedulers.mainThread();
+        return Schedulers.trampoline();
+        //return AndroidSchedulers.mainThread();
     }
 
     @Override
     public Scheduler getIo() {
-        //return Schedulers.trampoline();
-        return AndroidSchedulers.mainThread();
+        return Schedulers.trampoline();
+        //return AndroidSchedulers.mainThread();
     }
 }

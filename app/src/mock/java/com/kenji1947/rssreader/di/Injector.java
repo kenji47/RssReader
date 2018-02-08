@@ -20,7 +20,7 @@ import com.kenji1947.rssreader.fakes.SchedulersTrampoline;
 public class Injector {
 
     public static SchedulersProvider provideSchedulers() {
-        //return new AppSchedulers();
+       // return new AppSchedulers();
         return new SchedulersTrampoline();
     }
 

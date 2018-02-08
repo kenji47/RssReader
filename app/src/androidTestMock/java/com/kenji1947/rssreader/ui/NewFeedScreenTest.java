@@ -16,6 +16,7 @@ import com.kenji1947.rssreader.util.DatabaseOperationsImpl;
 import com.kenji1947.rssreader.util.EspressoOperations;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,6 +52,11 @@ public class NewFeedScreenTest {
         databaseOperations.clearAllDb();
     }
 
+    @Before
+    public void setUp() throws Exception {
+        EspressoOperations.activityTestRule = mainActivityActivityTestRule;
+    }
+
     @After
     public void after() {
         DataLab.clearAllData();
@@ -59,6 +65,7 @@ public class NewFeedScreenTest {
 
     @Test
     public void addFeed_Success() throws Exception{
+        AppSetup.feedApiServiceState = AppSetup.FEED_SERVICE_STATE.RETURN_SAME_FEED;
 
         EspressoOperations.startActivityDefaultIntent(mainActivityActivityTestRule);
 
@@ -69,25 +76,25 @@ public class NewFeedScreenTest {
         //add new feed xxx
         EspressoOperations.addNewFeedThroughDialog(DataLab.URL_XXX);
 
+        //check FeedList. Should be feed xxx
+        EspressoOperations.checkFeedListRecyclerViewByScrollToHolder(DataLab.getFeeds());
+
         //check empty pic
         onView(withId(R.id.linearlayout_empty_list))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-
-        //check FeedList. Should be feed xxx
-        EspressoOperations.checkFeedListRecyclerView(DataLab.getFeeds());
 
         //add new feed yyy
         EspressoOperations.addNewFeedThroughDialog(DataLab.URL_YYY);
 
         //check FeedList. Should be 2 feeds
-        EspressoOperations.checkFeedListRecyclerView(DataLab.getFeeds());
+        EspressoOperations.checkFeedListRecyclerViewByScrollToHolder(DataLab.getFeeds());
 
         //click on xxx feed
         onView(withId(R.id.recyclerView_feeds))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         //check ArticleList
-        EspressoOperations.checkArticleListRecyclerView(DataLab.generateFeed(DataLab.URL_XXX).articles);
+        EspressoOperations.checkArticleListRecyclerViewByScrollToHolder(DataLab.generateFeed(DataLab.URL_XXX).articles);
         Espresso.pressBack();
 
         //click on yyy feed
@@ -95,10 +102,10 @@ public class NewFeedScreenTest {
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
 
         //check ArticleList
-        EspressoOperations.checkArticleListRecyclerView(DataLab.generateFeed(DataLab.URL_YYY).articles);
+        EspressoOperations.checkArticleListRecyclerViewByScrollToHolder(DataLab.generateFeed(DataLab.URL_YYY).articles);
         Espresso.pressBack();
-
     }
+
     @Test
     public void addFeed_Error_AlreadySubscribed() throws Exception{
 
@@ -125,7 +132,7 @@ public class NewFeedScreenTest {
 
         //check FeedList. Should be feed xxx
         DataLab.generateFeed(DataLab.URL_XXX);
-        EspressoOperations.checkFeedListRecyclerView(DataLab.getFeeds());
+        EspressoOperations.checkFeedListRecyclerViewByScrollToHolder(DataLab.getFeeds());
     }
 
     @Test
@@ -150,7 +157,7 @@ public class NewFeedScreenTest {
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
         //check FeedList. Should be empty
-        EspressoOperations.checkFeedListRecyclerView(new ArrayList<>());
+        EspressoOperations.checkFeedListRecyclerViewByScrollToHolder(new ArrayList<>());
     }
 
     //@Test

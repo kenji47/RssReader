@@ -48,6 +48,17 @@
         app:layout_constraintTop_toBottomOf="@+id/textView_feed_title"
         tools:text="Lorem ipsum categorized libraries Lorem ipsum categorized libraries" />
 
+    <TextView
+        android:id="@+id/textView_article_count"
+        style="@style/DescriptionText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton_options_menu"
+        app:layout_constraintStart_toEndOf="@+id/imageView_feed_image"
+        app:layout_constraintTop_toBottomOf="@+id/textView_feed_description"
+        tools:text="34" />
+
     <ImageButton
         android:id="@+id/imageButton_options_menu"
         android:layout_width="wrap_content"
@@ -66,6 +77,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_feed_description" />
+        app:layout_constraintTop_toBottomOf="@+id/textView_article_count" />
 
 </android.support.constraint.ConstraintLayout>

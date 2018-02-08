@@ -66,6 +66,7 @@ public class FeedDaoObjectBox implements FeedDao{
 
     @Override
     public Observable<List<Feed>> getFeedsAndObserve() {
+        Query<Feed> query;
         return RxQuery.observable(feedQuery)
                 .map(feedModelObjectBoxes -> {
                     List<Feed> feedList = new ArrayList<>();

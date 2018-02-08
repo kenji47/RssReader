@@ -1,19 +1,30 @@
 package com.kenji1947.rssreader.util;
 
 import android.content.Intent;
+import android.support.test.espresso.Espresso;
+import android.support.test.espresso.NoMatchingViewException;
+import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
+import com.azimolabs.conditionwatcher.ConditionWatcher;
 import com.kenji1947.rssreader.R;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;
+import com.kenji1947.rssreader.presentation.feed_list.FeedListAdapter;
 
 import java.util.List;
+
+import timber.log.Timber;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
@@ -22,9 +33,15 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
  */
 
 public class EspressoOperations {
+    public static ActivityTestRule activityTestRule;
+
+
+    public static void waitForListSize(int recyclerViewId, int size) throws Exception {
+        ConditionWatcher.waitForCondition(InstructionBuilder
+                .buildCheckAdapterSize(recyclerViewId, size, "", activityTestRule.getActivity()));
+    }
 
     public static void startActivityDefaultIntent(ActivityTestRule activityTestRule) {
-        //activityTestRule.launchActivity(new Intent(Intent.ACTION_MAIN));
         activityTestRule.launchActivity(new Intent());
     }
 
@@ -50,18 +67,31 @@ public class EspressoOperations {
     }
 
 
+    public static void clickOnViewInHolder(int recyclerViewId, int targetViewId, int pos) {
+        onView(withId(recyclerViewId)).perform(RecyclerViewActions.scrollToPosition(pos));
+        onView(MyMatcher.withRecyclerView(recyclerViewId)
+                .atPositionWithId(pos, targetViewId))
+                .perform(click());
+    }
+
     //Old
-    public static void checkFeedListRecyclerViewByScrollToHolder(List<Feed> feedList) {
-        for (Feed feed : feedList) {
+    public static void checkFeedListRecyclerViewByScrollToHolder(List<Feed> feedList) throws Exception {
+        waitForListSize(R.id.recyclerView_feeds, feedList.size());
+        for (int i = 0; i < feedList.size(); i++) {
             onView(withId(R.id.recyclerView_feeds))
-                    .perform(RecyclerViewActions.scrollToHolder(MyMatcher.holderFeedListWithFeed(feed)));
+                    .perform(RecyclerViewActions.scrollToPosition(i))
+                    .check(MyAssertions.checkFeedList2(feedList.get(i), i).assertFeedList());
         }
     }
 
-    public static void checkArticleListRecyclerViewByScrollToHolder(List<Article> articleList) {
-        for (Article article : articleList) {
+
+    public static void checkArticleListRecyclerViewByScrollToHolder(List<Article> articleList) throws Exception {
+        waitForListSize(R.id.recyclerView_articles, articleList.size());
+        for (int i = 0; i < articleList.size(); i++) {
             onView(withId(R.id.recyclerView_articles))
-                    .perform(RecyclerViewActions.scrollToHolder(MyMatcher.holderArticleListWithArticle(article)));
+                    .perform(RecyclerViewActions.scrollToPosition(i))
+                    .check(MyAssertions.checkArticleList2(articleList.get(i), i).assertFeedList());
         }
+
     }
 }

@@ -96,6 +96,7 @@ public final class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.
         public @BindView(R.id.textView_feed_title) TextView feedTitle;
         public @BindView(R.id.textView_feed_description) TextView feedDescription;
         public @BindView(R.id.imageButton_options_menu) ImageButton imageButton_options_menu;
+        public @BindView(R.id.textView_article_count) TextView textView_article_count;
 
         private final ImageLoader imageLoader;
 
@@ -123,6 +124,7 @@ public final class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.
             imageLoader.loadImage(feed.imageUrl, feedImage, R.drawable.ic_menu_overflow_light, R.drawable.ic_menu_overflow_light);
             feedTitle.setText(feed.title);
             feedDescription.setText(feed.description);
+            textView_article_count.setText(feed.articles.size() + "");
             Timber.d(feed.title + " articles: " + feed.articles.size());
 //            if (feed.isSelected) {
 //                selectionIndicator.startFillAnimation();

@@ -19,6 +19,7 @@ import com.kenji1947.rssreader.util.EspressoOperations;
 
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,6 +57,11 @@ public class ArticleListScreen {
         databaseOperations.clearAllDb();
     }
 
+    @Before
+    public void setUp() throws Exception {
+        EspressoOperations.activityTestRule = mainActivityActivityTestRule;
+    }
+
     @After
     public void after() {
         DataLab.clearAllData();
@@ -68,6 +74,7 @@ public class ArticleListScreen {
         List<Feed> feedList = DataLab.generateFeeds(2, 2);
         databaseOperations.addFeeds(feedList);
         EspressoOperations.startActivityDefaultIntent(mainActivityActivityTestRule);
+
 
         //click on Feed at pos:0
         onView(withId(R.id.recyclerView_feeds))
