@@ -8,7 +8,7 @@ ext {
     constraintLayout = '1.0.2'
 
     //Dagger
-    dagger2 = '2.9';
+    dagger2 = '2.14';
 
     //Moxy
     moxy = '1.5.3'

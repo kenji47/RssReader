@@ -23,6 +23,7 @@ public final class ImageLoaderGlide implements ImageLoader {
              .error(errorDrawable)
              .crossFade()
              .transform(new CircleImageTransformation(context))
+                .fitCenter()
              .into(target);
     }
 }

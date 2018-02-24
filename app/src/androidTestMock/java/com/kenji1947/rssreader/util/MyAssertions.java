@@ -161,29 +161,26 @@ public class MyAssertions {
         }
 
         public ViewAssertion assertFeedList() {
-            return new ViewAssertion() {
-                @Override
-                public void check(View view, NoMatchingViewException noViewFoundException) {
-                    if (noViewFoundException != null) {
-                        throw noViewFoundException;
-                    }
-                    RecyclerView recyclerView = (RecyclerView) view;
-
-                    assertThat(recyclerView.getAdapter().getItemCount(), is(feedList.size()));
-
-                    for (int i = 0; i < feedList.size(); i++) {
-                        Timber.d("assertFeedList " + i);
-                        FeedListAdapter.FeedViewHolder holder =
-                                (FeedListAdapter.FeedViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
-                        if (holder != null) {
-                            Timber.d("assertFeedList " + i + " holder != null");
-                            Feed feed = feedList.get(i);
-                            assertThat(feed.title, is(holder.feedTitle.getText().toString()));
-                            assertThat(feed.description, is(holder.feedDescription.getText().toString()));
-                        }
-                    }
-
+            return (view, noViewFoundException) -> {
+                if (noViewFoundException != null) {
+                    throw noViewFoundException;
                 }
+                RecyclerView recyclerView = (RecyclerView) view;
+
+                assertThat(recyclerView.getAdapter().getItemCount(), is(feedList.size()));
+
+                for (int i = 0; i < feedList.size(); i++) {
+                    Timber.d("assertFeedList " + i);
+                    FeedListAdapter.FeedViewHolder holder =
+                            (FeedListAdapter.FeedViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
+                    if (holder != null) {
+                        Timber.d("assertFeedList " + i + " holder != null");
+                        Feed feed = feedList.get(i);
+                        assertThat(feed.title, is(holder.feedTitle.getText().toString()));
+                        assertThat(feed.description, is(holder.feedDescription.getText().toString()));
+                    }
+                }
+
             };
         }
     }

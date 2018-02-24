@@ -18,6 +18,7 @@ public class ArticleModelObjectBox {
     public String title;
     public String link;
     public long publicationDate;
+    public String imageLink;
 
     public boolean isNew = true;
     public boolean isFavourite = false;
@@ -105,5 +106,13 @@ public class ArticleModelObjectBox {
 
     public void setFeed(ToOne<FeedModelObjectBox> feed) {
         this.feed = feed;
+    }
+
+    public String getImageLink() {
+        return imageLink;
+    }
+
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
     }
 }

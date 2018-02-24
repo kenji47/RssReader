@@ -73,7 +73,7 @@ public class FeedRepositoryImpl implements FeedRepository {
 
     @Override
     public Observable<List<Feed>> getFeedsAndObserve() {
-        Timber.d("getFeeds");
+        Timber.d("getFeedsAndObserve");
         return feedDao.getFeedsAndObserve().subscribeOn(schedulersProvider.getIo());
     }
 
@@ -88,6 +88,11 @@ public class FeedRepositoryImpl implements FeedRepository {
     public Completable saveArticlesForFeed(long feedId, List<Article> articles) {
         return feedDao.updateFeed(feedId, articles);
     }
+    @Override
+    public Completable saveFeeds(List<Feed> feeds) {
+        return feedDao.updateFeeds(feeds);
+    }
+
 
     @Override
     public Single<Boolean> feedExists(final String feedUrl) {

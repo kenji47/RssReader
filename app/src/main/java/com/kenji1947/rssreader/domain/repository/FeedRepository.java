@@ -18,6 +18,9 @@ public interface FeedRepository {
     Single<Feed> getFeed(long id);
     Single<List<Feed>> getFeeds();
     Completable saveArticlesForFeed(long feedId, List<Article> articles);
+
+    Completable saveFeeds(List<Feed> feeds);
+
     Single<Boolean> feedExists(String feedUrl);
 
     Observable<List<Feed>> getFeedsAndObserve();

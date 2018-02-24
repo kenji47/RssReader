@@ -96,6 +96,7 @@ dependencies {
     //earl parser
     compile "com.einmalfel:earl:$earlParser"
     compile "com.annimon:stream:$streamAnnimon"
+    compile 'org.simpleframework:simple-xml:2.7.1'
 
     //RxJava
     compile "io.reactivex.rxjava2:rxjava:$rxjava2"

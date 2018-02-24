@@ -34,12 +34,12 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 
     //TODO Move to Feed Intercator
     @Override
-    public void notifyArticleUpdated() {
+    public void notifyArticleModified() {
         articleServiceUpdate.onNext(true);
     }
 
     @Override
-    public Observable<Boolean> observeArticleUpdates() {
+    public Observable<Boolean> observeArticlesModification() {
         return articleServiceUpdate
                 .throttleFirst(CLICK_THROTTLE_WINDOW_MILLIS, TimeUnit.MILLISECONDS)
                 .subscribeOn(schedulersProvider.getIo());
@@ -51,6 +51,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
         return Single.defer(() -> articleDao.getArticles(feedId)).subscribeOn(schedulersProvider.getIo());
         //subscribeOn
         //return database.getArticles(feedId);
+    }
+
+    @Override
+    public Observable<List<Article>> getArticlesAndObserve(long feedId) {
+        return articleDao.getArticlesAndObserve(feedId).subscribeOn(schedulersProvider.getIo());
     }
 
     @Override

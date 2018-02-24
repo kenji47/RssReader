@@ -14,11 +14,14 @@ import io.reactivex.Single;
  */
 
 public interface ArticleRepository {
-    void notifyArticleUpdated();
+    void notifyArticleModified();
 
-    Observable<Boolean> observeArticleUpdates();
+    Observable<Boolean> observeArticlesModification();
 
     Single<List<Article>> getArticles(long feedId);
+
+    Observable<List<Article>> getArticlesAndObserve(long feedId);
+
     Single<List<Article>> getFavouriteArticles();
     Completable markArticleAsRead(long articleId);
     Completable favouriteArticle(long articleId);

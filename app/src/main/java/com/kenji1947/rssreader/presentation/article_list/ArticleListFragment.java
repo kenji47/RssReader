@@ -120,10 +120,10 @@ public class ArticleListFragment extends MvpAppCompatFragment implements Article
         super.onViewCreated(view, savedInstanceState);
         initList();
         if (isFavMode) {
-            presenter.getFavArticles();
+            //presenter.getFavArticles();
             initToolbar(getString(R.string.toolbar_title_favourite_articles));
         } else {
-            presenter.getArticlesForFeed(getIdFromArguments());
+            //presenter.getArticlesForFeed(getIdFromArguments());
             initToolbar(getFeedTitleFromArguments());
         }
     }

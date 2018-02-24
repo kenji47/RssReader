@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 /**
@@ -27,4 +28,8 @@ public class ArticlesCrudInteractor {
     public Single<List<Article>> getArticles(long feedId) {
         return articleRepository.getArticles(feedId);
     }
+    public Observable<List<Article>> getArticlesAndObserve(long feedId) {
+        return articleRepository.getArticlesAndObserve(feedId);
+    }
+
 }

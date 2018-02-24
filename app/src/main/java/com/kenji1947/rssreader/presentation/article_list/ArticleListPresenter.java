@@ -6,7 +6,7 @@ import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.interactors.article.ArticleFavouriteInteractor;
 import com.kenji1947.rssreader.domain.interactors.article.ArticleUnreadInteractor;
 import com.kenji1947.rssreader.domain.interactors.article.ArticlesCrudInteractor;
-import com.kenji1947.rssreader.domain.interactors.article.ObserveArticleUpdatesInteractor;
+import com.kenji1947.rssreader.domain.interactors.article.ObserveArticlesModificationInteractor;
 import com.kenji1947.rssreader.domain.util.SchedulersProvider;
 import com.kenji1947.rssreader.presentation.Screens;
 
@@ -30,7 +30,7 @@ public class ArticleListPresenter extends MvpPresenter<ArticleListView> {
     private ArticlesCrudInteractor articlesCrudInteractor;
     private ArticleFavouriteInteractor articleFavouriteInteractor;
     private ArticleUnreadInteractor articleUnreadInteractor;
-    private ObserveArticleUpdatesInteractor observeArticleUpdatesInteractor;
+    private ObserveArticlesModificationInteractor observeArticleUpdatesInteractor;
     private SchedulersProvider schedulersProvider;
     private Router router;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -40,7 +40,7 @@ public class ArticleListPresenter extends MvpPresenter<ArticleListView> {
                                 ArticlesCrudInteractor articlesCrudInteractor,
                                 ArticleFavouriteInteractor articleFavouriteInteractor,
                                 ArticleUnreadInteractor articleUnreadInteractor,
-                                ObserveArticleUpdatesInteractor observeArticleUpdatesInteractor,
+                                ObserveArticlesModificationInteractor observeArticleUpdatesInteractor,
                                 SchedulersProvider schedulersProvider,
                                 Router router) {
         this.feedId = feedId;
@@ -56,17 +56,19 @@ public class ArticleListPresenter extends MvpPresenter<ArticleListView> {
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
-        observeArticleUpdates();
-//        if (isFavModeOn) {
-//            getFavArticles();
-//        } else {
-//            getArticlesForFeed(feedId);
-//        }
+        //observeArticleUpdates();
+
+        if (isFavModeOn) {
+            getFavArticles();
+        } else {
+            getArticlesForFeedObserve(feedId);
+            //getArticlesForFeed(feedId);
+        }
     }
 
     private void observeArticleUpdates() {
-        Timber.d("observeArticleUpdates");
-        compositeDisposable.add(observeArticleUpdatesInteractor.observeArticleUpdates()
+        Timber.d("observeArticlesModification");
+        compositeDisposable.add(observeArticleUpdatesInteractor.observeArticlesModification()
                 .observeOn(schedulersProvider.getMain())
                 .subscribe(this::onObserveArticleUpdatesSuccess)
         );
@@ -102,14 +104,28 @@ public class ArticleListPresenter extends MvpPresenter<ArticleListView> {
                 });
     }
 
+    void getArticlesForFeedObserve(long feedId) {
+        this.feedId = feedId;
+        articlesCrudInteractor.getArticlesAndObserve(feedId)
+//                .doOnSubscribe(disposable -> {getViewState().showProgress(true);})
+//                .doAfterTerminate(() -> {getViewState().showProgress(false);})
+                .observeOn(schedulersProvider.getMain())
+                .subscribe(articles -> {
+                    articleList = articles;
+                    getViewState().showArticles(articles);
+                });
+    }
+
     //TODO Optimistic call
     void markArticleAsRead(long articleId) {
         articleUnreadInteractor.markArticleAsRead(articleId)
+                .doOnComplete(() -> observeArticleUpdatesInteractor.notifyArticleModified())
                 .observeOn(schedulersProvider.getMain())
                 .subscribe(() -> {
                     Timber.d("onComplete markArticleAsRead");
                 });
     }
+
     //TODO Optimistic call
     void toggleArticleFavourite (int pos) {
         (articleList.get(pos).isFavourite ?

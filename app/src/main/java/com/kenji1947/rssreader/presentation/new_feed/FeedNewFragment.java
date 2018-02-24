@@ -36,6 +36,9 @@ import timber.log.Timber;
 //TODO Not used
 public class FeedNewFragment extends MvpAppCompatFragment implements FeedNewView {
 
+
+
+
     //delete
     public static final String TAG = FeedNewFragment.class.getSimpleName();
     private static final long THROTTLE_MILLIS = 300L; //TODO Объяснить

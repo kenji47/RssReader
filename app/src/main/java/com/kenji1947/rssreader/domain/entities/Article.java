@@ -9,6 +9,7 @@ public class Article {
     public long feedId;
     public String title;
     public String link;
+    public String imageLink;
     public long publicationDate;
 
     public boolean isNew = true;

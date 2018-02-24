@@ -120,7 +120,7 @@ public class FeedConverterTest {
 
     @Test
     public void shouldMapApiArticleToDb() throws Exception {
-        ApiArticle apiArticle = new ApiArticle("New title", "link/", 2343245L);
+        ApiArticle apiArticle = new ApiArticle("New title", "link/", imageLink, 2343245L);
         assertApiArticleToDb(apiArticle, converter.apiToDb(apiArticle));
     }
 
@@ -139,7 +139,7 @@ public class FeedConverterTest {
         //create ApiFeed with ApiArticle list
         List<ApiArticle> apiArticles = new ArrayList<>();
         for (int i = 0; i < srticleListSize; i++) {
-            apiArticles.add(new ApiArticle("New title" + i, "link/" + i, 2343245L + i));
+            apiArticles.add(new ApiArticle("New title" + i, "link/" + i, imageLink, 2343245L + i));
         }
         ApiFeed apiFeed = new ApiFeed(
                 ConverterTestData.TEST_STRING_TITLE_1,

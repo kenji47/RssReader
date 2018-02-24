@@ -61,9 +61,25 @@ public class FeedUpdateInteractor {
                 .flatMap(Observable::fromIterable)
                 .flatMap(feed -> fetchOnlyNewArticlesForFeed(feed).toObservable()) //catch error
                 .flatMap(feed -> feedRepository
-                        .saveArticlesForFeed(feed.id, feed.articles).toObservable())
+                        .saveArticlesForFeed(feed.id, feed.articles).toObservable()) //TODO Сохранять сразу весь список в транзакции
                 .count()
                 .flatMap(count -> feedRepository.getFeeds());
+    }
+
+    public Completable updateAllFeeds2() {
+        return connectivityReceiver.isConnected()
+                .flatMap(aBoolean -> aBoolean
+                        ? feedRepository.getFeeds()
+                        : Single.error(new NoNetworkException()))
+                .toObservable()
+                .flatMap(Observable::fromIterable)
+                .flatMap(feed -> fetchOnlyNewArticlesForFeed(feed).toObservable()) //catch error
+                .toList()
+                .flatMapCompletable(feeds -> feedRepository.saveFeeds(feeds));
+//                .flatMap(feed -> feedRepository
+//                        .saveArticlesForFeed(feed.id, feed.articles).toObservable()) //TODO Сохранять сразу весь список в транзакции
+//                .count()
+//                .flatMap(count -> feedRepository.getFeeds());
     }
 
     //Used by Update Service

@@ -1,11 +1,10 @@
 package com.kenji1947.rssreader.presentation.feed_list;
 
-import android.support.v7.util.DiffUtil;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.kenji1947.rssreader.data.worker.error_handler.ErrorHandler;
 import com.kenji1947.rssreader.domain.entities.Feed;
+import com.kenji1947.rssreader.domain.interactors.article.ObserveArticlesModificationInteractor;
 import com.kenji1947.rssreader.domain.interactors.feed.BackgroundFeedUpdateInteractor;
 import com.kenji1947.rssreader.domain.interactors.feed.FeedCrudInteractor;
 import com.kenji1947.rssreader.domain.interactors.feed.FeedUpdateInteractor;
@@ -32,6 +31,7 @@ import timber.log.Timber;
 public class FeedListPresenter extends MvpPresenter<FeedListView> {
     private FeedCrudInteractor feedCrudInteractor;
     private FeedUpdateInteractor updateAllFeedsInteractor;
+    private ObserveArticlesModificationInteractor observeArticlesModificationInteractor;
     private BackgroundFeedUpdateInteractor backgroundUpdateInteractor;
     private SchedulersProvider schedulersProvider;
     private ErrorHandler errorHandler;
@@ -45,11 +45,13 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
     @Inject
     public FeedListPresenter(FeedCrudInteractor feedCrudInteractor,
                              FeedUpdateInteractor updateAllFeedsInteractor,
+                             ObserveArticlesModificationInteractor observeArticlesModificationInteractor,
                              BackgroundFeedUpdateInteractor backgroundUpdateInteractor,
                              SchedulersProvider schedulersProvider,
                              ErrorHandler errorHandler,
                              Router router) {
         this.feedCrudInteractor = feedCrudInteractor;
+        this.observeArticlesModificationInteractor = observeArticlesModificationInteractor;
         this.backgroundUpdateInteractor = backgroundUpdateInteractor;
         this.updateAllFeedsInteractor = updateAllFeedsInteractor;
         this.schedulersProvider = schedulersProvider;
@@ -61,6 +63,7 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Timber.d("onDestroy");
         compositeDisposable.clear();
     }
 
@@ -68,41 +71,74 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
     @Override
     public void onFirstViewAttach() {
         Timber.d("onFirstViewAttach");
+
         //getBackgroundFeedUpdatesStatus();
         //observeShouldUpdateFeedsInBackground();
         //getAllFeeds();
+
+        observeArticlesModification();
         getAllFeedsObserve();
         //updateAllFeeds(); //TODO Повесить на рефреш?
+    }
+
+    //TODO Проверить как ОБ уведомляет при изменении дочерних сущностей
+    private void observeArticlesModification() {
+        Timber.d("observeArticlesModification");
+        compositeDisposable.add(observeArticlesModificationInteractor.observeArticlesModification()
+                .observeOn(schedulersProvider.getMain())
+                .subscribe(aBoolean -> {getAllFeedsObserve();})
+        );
+    }
+
+    //--------------
+    public void updateAllFeedsNewArticlesCount() {
+        compositeDisposable.add(updateAllFeedsInteractor.updateAllFeedsAndGetNewArticlesCount()
+                .observeOn(schedulersProvider.getMain())
+                .doOnSubscribe(disposable -> getViewState().showProgress(true))
+                //.doAfterTerminate(() -> getViewState().showProgress(false)) //TODO doFinally
+                .subscribe(this::updateAllFeedsNewArticlesCount, this::updateAllFeedsNewArticlesCount)
+        );
+    }
+
+    private void updateAllFeedsNewArticlesCount(Integer newArticlesCount) {
+        getViewState().showProgress(false);
+        getViewState().showNewArticlesCountMessage(newArticlesCount);
+    }
+
+    private void updateAllFeedsNewArticlesCount(Throwable throwable) {
+        getViewState().showProgress(false);
+        errorHandler.handleErrorScreenFeedList(throwable, s -> getViewState().showErrorMessage(s));
     }
 
 
     //Есди не удача выбрать из бд
     public void updateAllFeeds() {
-        compositeDisposable.add(updateAllFeedsInteractor.updateAllFeeds()
+        compositeDisposable.add(updateAllFeedsInteractor.updateAllFeeds2()
                 .observeOn(schedulersProvider.getMain())
                 .doOnSubscribe(disposable -> getViewState().showProgress(true))
                 //.doAfterTerminate(() -> getViewState().showProgress(false)) //TODO doFinally
                 .subscribe(this::onUpdateAllFeedsSuccess, this::onUpdateAllFeedsError)
                 );
     }
-    private void onUpdateAllFeedsSuccess(List<Feed> feeds) {
-        Timber.d("onSuccess");
+    //TODO Во время выполнения обновления фидов, уведомления будут прилетать в список. Сохранять весь список
+    private void onUpdateAllFeedsSuccess() {
+        Timber.d("onUpdateAllFeedsSuccess " + feeds.size());
 
         getViewState().showProgress(false);
-
         this.feeds = feeds;
-        getViewState().showFeedSubscriptions(feeds);
+        //getViewState().showFeedSubscriptions(feeds);
     }
     private void onUpdateAllFeedsError(Throwable throwable) {
         Timber.d("onUpdateAllFeedsError " + throwable);
         getViewState().showProgress(false);
 
         errorHandler.handleErrorScreenFeedList(throwable, s -> getViewState().showErrorMessage(s));
+
         //TODO Нужно показать значок пустой список, если нет интернета и бд пуста
-        getAllFeeds();
+        //getAllFeeds();
     }
 
-    //--
+    //--------------
     public void getAllFeeds() {
         Timber.d("getAllFeeds");
 //        compositeDisposable.add(feedCrudInteractor.getFeeds()
@@ -114,17 +150,18 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
 //        );
     }
 
+    //TODO ПРоверить, может ли диффРезулт скрыть обновление дочернего элемента (проверка размера)
     public void getAllFeedsObserve() {
         Timber.d("getAllFeedsObserve");
         compositeDisposable.add(feedCrudInteractor.getFeedsAndObserve()
                 .map(newList -> DiffCalculator.calculateFeedListDiff(newList, feeds)) //TODO Move to DI
-                .doOnSubscribe(disposable -> getViewState().showProgress(true)) //TODO
+                //.doOnSubscribe(disposable -> getViewState().showProgress(true)) //TODO
                 .observeOn(schedulersProvider.getMain())
                 .subscribe(this::onGetAllFeedsObservableSuccess, this::onGetAllFeedsError));
     }
 
     private void onGetAllFeedsObservableSuccess(ListDataDiffHolder<Feed> listDataDiffHolder) {
-        Timber.d("onSuccess");
+        Timber.d("onGetAllFeedsObservableSuccess " + listDataDiffHolder.getList().size());
         getViewState().showProgress(false);
         this.feeds = listDataDiffHolder.getList();
         getViewState().showFeedObservableSubscriptions(listDataDiffHolder);

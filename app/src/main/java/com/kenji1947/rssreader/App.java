@@ -16,6 +16,7 @@ import com.kenji1947.rssreader.di.application.modules.SchedulersModule;
 import com.kenji1947.rssreader.di.application.modules.UtilsModule;
 import com.squareup.leakcanary.LeakCanary;
 
+import io.reactivex.plugins.RxJavaPlugins;
 import ru.terrakok.cicerone.Cicerone;
 import ru.terrakok.cicerone.NavigatorHolder;
 import ru.terrakok.cicerone.Router;
@@ -36,21 +37,25 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         INSTANCE = this;
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true); //TODO Do i need this?
+
         initAppComponent(this);
         initTimber();
+        initLeakCanary();
+        initRxJava();
 
         Timber.d("onCreate");
-        initNewComponent();
-        //AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-//        LeakCanary.install(this);
-//        LeakCanary.enableDisplayLeakActivity(this);
-//        LeakCanary.refWatcher(this);
-        //initCicerone();
     }
 
-    private void initNewComponent() {
+    private void initRxJava() {
+        //Android application should set a no-op handler
+        //https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0#error-handling
+        RxJavaPlugins.setErrorHandler(e -> { });
+    }
 
+    private void initLeakCanary() {
+        LeakCanary.install(this);
     }
 
     private void initAppComponent(App app) {

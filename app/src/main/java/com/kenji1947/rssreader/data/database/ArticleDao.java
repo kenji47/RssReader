@@ -5,6 +5,7 @@ import com.kenji1947.rssreader.domain.entities.Article;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 /**
@@ -12,6 +13,8 @@ import io.reactivex.Single;
  */
 
 public interface ArticleDao {
+    Observable<List<Article>> getArticlesAndObserve(long feedId);
+
     Single<List<Article>> getArticles(long feedId);
     Single<List<Article>> getFavouriteArticles();
     Completable markArticleAsRead(long articleId);

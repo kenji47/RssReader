@@ -139,12 +139,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        Timber.d("onResume");
         super.onResume();
         navigatorHolder.setNavigator(navigator);
     }
 
     @Override
     protected void onPause() {
+        Timber.d("onPause");
         navigatorHolder.removeNavigator();
         super.onPause();
     }

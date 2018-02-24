@@ -1,10 +1,14 @@
 package com.kenji1947.rssreader.presentation.feed_list;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -18,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
@@ -31,9 +36,11 @@ import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.presentation.AdapterOverflowMenuHolder;
 import com.kenji1947.rssreader.presentation.common.DeleteDialog;
 import com.kenji1947.rssreader.presentation.common.ListDataDiffHolder;
+import com.kenji1947.rssreader.presentation.common.ThemedSnackbar;
 import com.kenji1947.rssreader.presentation.new_feed.FeedNewDialog;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -55,9 +62,14 @@ public class FeedListFragment extends MvpAppCompatFragment implements FeedListVi
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.recyclerView_feeds) RecyclerView listRecyclerView;
+    @BindView(R.id.swipeRefreshLayout_refresh_feeds) SwipeRefreshLayout swipeRefreshLayout_refresh_feeds;
+
     @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.loadProgressBar) ProgressBar loadProgressBar;
     @BindView(R.id.linearlayout_empty_list) LinearLayout linearlayout_empty_list;
+    @BindView(R.id.coordinator_top) CoordinatorLayout coordinator_top;
+
+    Toast toast;
 
     @Inject
     ImageLoader imageLoader;
@@ -139,6 +151,17 @@ public class FeedListFragment extends MvpAppCompatFragment implements FeedListVi
         super.onResume();
     }
 
+    @Override
+    public void onPause() {
+        Timber.d("onPause");
+        if (toast != null)
+            toast.cancel();
+        super.onPause();
+
+        //if (!getActivity().isChangingConfigurations())
+
+    }
+
     private void initToolbar() {
         toolbar.setTitle(getString(R.string.app_name));
         AppCompatActivity activity = (AppCompatActivity)getActivity();
@@ -156,6 +179,15 @@ public class FeedListFragment extends MvpAppCompatFragment implements FeedListVi
         adapter.onItemClick().subscribe(this::onFeedClicked);
         adapter.onItemLongClick().subscribe(this::onFeedLongClick);
         adapter.onOverflowMenuClick().subscribe(this::onFeedOverflowMenuClick);
+
+        swipeRefreshLayout_refresh_feeds.setSize(SwipeRefreshLayout.LARGE);
+        swipeRefreshLayout_refresh_feeds.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        swipeRefreshLayout_refresh_feeds.setOnRefreshListener(() -> {
+            presenter.updateAllFeedsNewArticlesCount();
+        });
     }
 
     //TODO Адаптер должен возвращать position
@@ -310,7 +342,18 @@ public class FeedListFragment extends MvpAppCompatFragment implements FeedListVi
     //---
     @Override
     public void showErrorMessage(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        ThemedSnackbar
+                .makeErrorSnackbar(coordinator_top, message)
+                .setAction(R.string.snackbar_action_button_retry, view -> {
+                    presenter.updateAllFeedsNewArticlesCount();
+                }).show();
+    }
+
+    @Override
+    public void showNewArticlesCountMessage(Integer count) {
+        ThemedSnackbar
+                .makeNewArticlesSnackbar(coordinator_top, getString(R.string.snackbar_text_updated_articles, count))
+                .show();
     }
 
     @Override
@@ -348,9 +391,10 @@ public class FeedListFragment extends MvpAppCompatFragment implements FeedListVi
 
     @Override
     public void showProgress(boolean progress) {
-        if (progress)
-            loadProgressBar.setVisibility(View.VISIBLE);
-        else
-            loadProgressBar.setVisibility(View.GONE);
+        swipeRefreshLayout_refresh_feeds.post(() -> swipeRefreshLayout_refresh_feeds.setRefreshing(progress));
+//        if (progress)
+//            loadProgressBar.setVisibility(View.VISIBLE);
+//        else
+//            loadProgressBar.setVisibility(View.GONE);
     }
 }

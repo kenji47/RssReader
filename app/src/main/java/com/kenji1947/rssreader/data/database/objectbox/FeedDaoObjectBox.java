@@ -157,6 +157,19 @@ public class FeedDaoObjectBox implements FeedDao{
         Timber.d("updateFeedDomain feedId " + feedId);
         return Completable.fromAction(() -> innerUpdateFeedDomain(feedId, articles));
     }
+
+    @Override
+    public Completable updateFeeds(List<Feed> feeds) {
+        Timber.d("updateFeeds");
+        return Completable.fromAction(() -> {
+            boxStore.runInTx(() -> {
+                for (Feed feed : feeds) {
+                    innerUpdateFeedDomain(feed.id, feed.articles);
+                }
+            });
+        });
+    }
+
     private void innerUpdateFeedDomain(final long feedId, List<Article> articles) {
         FeedModelObjectBox feed = feedBox.get(feedId);
 

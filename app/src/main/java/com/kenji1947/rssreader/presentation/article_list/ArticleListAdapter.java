@@ -20,6 +20,7 @@ import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
+import timber.log.Timber;
 
 /**
  * Created by chamber on 14.12.2017.
@@ -111,6 +112,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                     R.drawable.ic_favorite : R.drawable.ic_not_favorite);
 
             textView_article_new_indicator.setVisibility(article.isNew ? View.VISIBLE : View.GONE);
+            Timber.d("imageLink: " + article.imageLink);
         }
 
         @OnClick(R.id.article_content_container)

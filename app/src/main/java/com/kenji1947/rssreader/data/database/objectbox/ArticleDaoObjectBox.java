@@ -6,10 +6,12 @@ import com.kenji1947.rssreader.data.database.objectbox.model.ArticleModelObjectB
 import com.kenji1947.rssreader.data.database.objectbox.model.ArticleModelObjectBox_;
 import com.kenji1947.rssreader.domain.entities.Article;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.objectbox.Box;
 import io.objectbox.query.Query;
+import io.objectbox.rx.RxQuery;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -25,6 +27,25 @@ public class ArticleDaoObjectBox implements ArticleDao{
     public ArticleDaoObjectBox(Box<ArticleModelObjectBox> articleBox, FeedObjectBoxConverter converter) {
         this.articleBox = articleBox;
         this.converter = converter;
+    }
+
+    @Override
+    public Observable<List<Article>> getArticlesAndObserve(long feedId) {
+        Query<ArticleModelObjectBox> queryArticleByFeedId = articleBox.query()
+                .equal(ArticleModelObjectBox_.feedId, feedId)
+                .orderDesc(ArticleModelObjectBox_.publicationDate)
+                .build();
+        return RxQuery.observable(queryArticleByFeedId)
+                .map(articleModelObjectBoxes -> {
+                    List<Article> articles = new ArrayList<>();
+                    for (ArticleModelObjectBox a : articleModelObjectBoxes) {
+                        articles.add(converter.dbToDomain(a));
+                    }
+                    return articles;
+                });
+                //.flatMap(Observable::fromIterable)
+                //.map(articleModel -> converter.dbToDomain(articleModel))
+                //.toList();
     }
 
     @Override
@@ -45,6 +66,8 @@ public class ArticleDaoObjectBox implements ArticleDao{
                 .map(articleModel -> converter.dbToDomain(articleModel))
                 .toList();
     }
+
+
 
     @Override
     public Single<List<Article>> getFavouriteArticles() {

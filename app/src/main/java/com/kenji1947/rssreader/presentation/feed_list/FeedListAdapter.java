@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.kenji1947.rssreader.R;
 import com.kenji1947.rssreader.data.worker.image_loader.ImageLoader;
+import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.presentation.AdapterOverflowMenuHolder;
 
@@ -121,10 +122,16 @@ public final class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.
 
         public void setItem(final Feed feed) {
             this.feed = feed;       //TODO R.drawable.feed_icon
-            imageLoader.loadImage(feed.imageUrl, feedImage, R.drawable.ic_menu_overflow_light, R.drawable.ic_menu_overflow_light);
-            feedTitle.setText(feed.title);
+            Timber.d("image url " + feed.imageUrl);
+            imageLoader.loadImage(
+                    feed.imageUrl,
+                    feedImage,
+                    R.drawable.secondary_circle,
+                    R.drawable.secondary_circle
+            );
+            feedTitle.setText(feed.title + " (" + feed.articles.size() + ")");
             feedDescription.setText(feed.description);
-            textView_article_count.setText(feed.articles.size() + "");
+            //textView_article_count.setText(feed.articles.size() + "");
             Timber.d(feed.title + " articles: " + feed.articles.size());
 //            if (feed.isSelected) {
 //                selectionIndicator.startFillAnimation();
@@ -132,6 +139,16 @@ public final class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.
 //                selectionIndicator.startHideAnimation();
 //            }
         }
+
+        private int getUnreadArticlesCount(List<Article> articles) {
+            int count = 0;
+            for (Article article : articles) {
+                if (article.isNew)
+                    count++;
+            }
+            return count;
+        }
+
         //TODO Можно заменяит на ViewHolder onClick
         @OnClick(R.id.feed_content_container)
         void onFeedClick() {

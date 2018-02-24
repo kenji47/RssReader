@@ -90,6 +90,7 @@ public class FeedNewDialog extends MvpAppCompatDialogFragment implements FeedNew
 
     @Override
     public void showProgress(boolean progress) {
+        Timber.d("showProgress " + progress);
         textView_error_message.setVisibility(progress ? View.GONE : View.VISIBLE);
         progressBar_loading_indicator.setVisibility(progress ? View.VISIBLE : View.GONE);
         positiveButton.setEnabled(!progress);
@@ -97,6 +98,7 @@ public class FeedNewDialog extends MvpAppCompatDialogFragment implements FeedNew
 
     @Override
     public void showMessage(String message) {
+        Timber.d("showMessage " + message);
         textView_error_message.setText(message);
     }
 

@@ -35,6 +35,9 @@
     <string name="menu_popup_feed_list_delete">Delete</string>
     <string name="menu_popup_feed_list_info">Show details</string>
 
+    <string name="snackbar_action_button_retry">Retry</string>
+    <string name="snackbar_text_updated_articles">%1$s new articles</string>
+
     //Article
     <string name="toolbar_title_favourite_articles">Favourite articles</string>
 

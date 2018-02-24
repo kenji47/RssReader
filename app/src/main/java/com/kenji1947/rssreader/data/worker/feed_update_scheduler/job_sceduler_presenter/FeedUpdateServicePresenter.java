@@ -3,7 +3,7 @@ package com.kenji1947.rssreader.data.worker.feed_update_scheduler.job_sceduler_p
 import com.kenji1947.rssreader.data.worker.notifications.NotificationFactory;
 import com.kenji1947.rssreader.data.worker.notifications.NotificationManager;
 import com.kenji1947.rssreader.data.worker.resource_manager.ResourceManager;
-import com.kenji1947.rssreader.domain.interactors.article.ObserveArticleUpdatesInteractor;
+import com.kenji1947.rssreader.domain.interactors.article.ObserveArticlesModificationInteractor;
 import com.kenji1947.rssreader.domain.interactors.feed.FeedUpdateInteractor;
 import com.kenji1947.rssreader.domain.util.SchedulersProvider;
 
@@ -22,7 +22,7 @@ public class FeedUpdateServicePresenter {
     private NotificationFactory notificationFactory;
     private ResourceManager resourceManager;
     private SchedulersProvider schedulersProvider;
-    private ObserveArticleUpdatesInteractor observeArticleUpdatesInteractor;
+    private ObserveArticlesModificationInteractor observeArticleUpdatesInteractor;
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -33,7 +33,7 @@ public class FeedUpdateServicePresenter {
             FeedUpdateInteractor updateAllFeedsInteractor,
             NotificationManager notificationManager,
             NotificationFactory notificationFactory,
-            ObserveArticleUpdatesInteractor observeArticleUpdatesInteractor,
+            ObserveArticlesModificationInteractor observeArticleUpdatesInteractor,
             ResourceManager resourceManager,
             SchedulersProvider schedulersProvider) {
 
@@ -70,7 +70,7 @@ public class FeedUpdateServicePresenter {
         Timber.d("onUpdateAllFeedsSuccess newArticlesCount: " + newArticlesCount);
         if (serviceView != null) {
             if (newArticlesCount > 0) {
-                observeArticleUpdatesInteractor.notifyArticleUpdated();
+                //observeArticleUpdatesInteractor.notifyArticleModified();
                 serviceView.showNewArticlesNotification(newArticlesCount, 5);
             }
             serviceView.finishJob();

@@ -34,6 +34,8 @@ public interface FeedDao {
     //Completable updateFeed(long feedId, List<ApiArticle> apiArticles);
     Completable updateFeed(long feedId, List<Article> articles);
 
+    Completable updateFeeds(List<Feed> feeds);
+
     Completable createNewFeed(String feedUrl);
     Completable deleteFeed(long feedId);
 
