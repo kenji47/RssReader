@@ -96,7 +96,7 @@ public class ArticleDetailFragment extends MvpAppCompatFragment implements Artic
     }
 
     private void setup() {
-        
+
     }
 
     private void setupWebView() {
