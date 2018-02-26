@@ -12,6 +12,7 @@ public class App2 extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        //78
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
