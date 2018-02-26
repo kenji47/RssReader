@@ -3,7 +3,7 @@ package com.kenji1947.rssreader.di.application.modules;
 import android.content.Context;
 
 import com.kenji1947.rssreader.BuildConfig;
-import com.kenji1947.rssreader.data.api.model.ApiConverter;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.model.ApiConverter;
 import com.kenji1947.rssreader.data.database.ArticleDao;
 import com.kenji1947.rssreader.data.database.FeedDao;
 import com.kenji1947.rssreader.data.database.objectbox.ArticleDaoObjectBox;

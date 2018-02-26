@@ -1,11 +1,11 @@
 package com.kenji1947.rssreader.di.application.modules;
 
-import com.kenji1947.rssreader.data.api.FeedApiService;
-import com.kenji1947.rssreader.data.api.model.ApiConverter;
-import com.kenji1947.rssreader.data.api.parser.EarlParserWrapper;
-import com.kenji1947.rssreader.data.api.parser.ParserWrapper;
-import com.kenji1947.rssreader.data.api.parser.FeedParser;
-import com.kenji1947.rssreader.data.api.parser.FeedParserImpl;
+import com.kenji1947.rssreader.data.api.fetch_feed.feedly_api.FeedApiService;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.model.ApiConverter;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.parser.EarlParserWrapper;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.parser.ParserWrapper;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.parser.FeedParser;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.parser.FeedParserImpl;
 import com.kenji1947.rssreader.data.util.CurrentTimeProvider;
 import com.kenji1947.rssreader.di.Injector;
 

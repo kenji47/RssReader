@@ -1,4 +1,4 @@
-package com.kenji1947.rssreader.data.api.model;
+package com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.model;
 
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;

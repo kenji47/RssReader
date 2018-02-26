@@ -1,6 +1,8 @@
-package com.kenji1947.rssreader.data.api;
+package com.kenji1947.rssreader.data.api.fetch_feed;
 
-import com.kenji1947.rssreader.data.api.model.ApiFeed;
+
+
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.model.ApiFeed;
 
 import io.reactivex.Single;
 import retrofit2.http.GET;

@@ -1,15 +1,7 @@
 package com.kenji1947.rssreader.fakes;
 
-import com.kenji1947.rssreader.data.api.FeedApiService;
-import com.kenji1947.rssreader.data.api.model.ApiArticle;
-import com.kenji1947.rssreader.data.api.model.ApiConverter;
-import com.kenji1947.rssreader.data.api.model.ApiConverterImpl;
-import com.kenji1947.rssreader.data.api.model.ApiFeed;
+import com.kenji1947.rssreader.data.api.fetch_feed.feedly_api.FeedApiService;
 import com.kenji1947.rssreader.domain.entities.Feed;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 import io.reactivex.Single;
 import timber.log.Timber;

@@ -1,6 +1,6 @@
-package com.kenji1947.rssreader.data.api.parser;
+package com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.parser;
 
-import com.kenji1947.rssreader.data.api.model.ApiFeed;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.model.ApiFeed;
 
 import java.io.InputStream;
 

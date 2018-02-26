@@ -3,8 +3,8 @@ package com.kenji1947.rssreader.di;
 
 import com.kenji1947.rssreader.data.api.FeedApiService;
 import com.kenji1947.rssreader.data.api.FeedApiServiceImpl;
-import com.kenji1947.rssreader.data.api.model.ApiConverter;
-import com.kenji1947.rssreader.data.api.parser.FeedParser;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.model.ApiConverter;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.parser.FeedParser;
 import com.kenji1947.rssreader.data.connectivity.ConnectivityManagerWrapper;
 import com.kenji1947.rssreader.data.connectivity.NetworkUtils;
 import com.kenji1947.rssreader.data.connectivity.NetworkUtilsImpl;

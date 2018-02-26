@@ -1,7 +1,5 @@
 package com.kenji1947.rssreader.data.database.objectbox;
 
-import com.kenji1947.rssreader.data.api.model.ApiArticle;
-import com.kenji1947.rssreader.data.api.model.ApiFeed;
 import com.kenji1947.rssreader.data.database.CommonUtils;
 import com.kenji1947.rssreader.data.database.FeedDao;
 import com.kenji1947.rssreader.data.database.objectbox.converter.FeedObjectBoxConverter;
@@ -18,7 +16,6 @@ import java.util.List;
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
 import io.objectbox.query.Query;
-import io.objectbox.rx.RxBoxStore;
 import io.objectbox.rx.RxQuery;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;

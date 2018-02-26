@@ -1,9 +1,8 @@
 package com.kenji1947.rssreader.data.repository;
 
-import com.kenji1947.rssreader.data.api.FeedApiService;
+import com.kenji1947.rssreader.data.api.fetch_feed.feedly_api.FeedApiService;
 import com.kenji1947.rssreader.data.database.CommonUtils;
 import com.kenji1947.rssreader.data.database.FeedDao;
-import com.kenji1947.rssreader.data.database.objectbox.FeedDaoObjectBox;
 import com.kenji1947.rssreader.data.worker.preference.PreferenceManager;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;

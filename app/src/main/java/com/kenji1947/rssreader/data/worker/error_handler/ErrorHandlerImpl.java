@@ -35,6 +35,7 @@ public class ErrorHandlerImpl implements ErrorHandler{
         } catch (Exception e) {
             Timber.e(errorOnHandling + " " + throwable);
         }
+        Timber.d("handleError " + throwable.getMessage());
     }
     @Override
     public void handleErrorScreenFeedList(Throwable throwable, Consumer<String> consumer) {
@@ -60,5 +61,6 @@ public class ErrorHandlerImpl implements ErrorHandler{
         } catch (Exception e) {
             Timber.e(errorOnHandling + " " + throwable);
         }
+        Timber.d("handleError " + throwable);
     }
 }

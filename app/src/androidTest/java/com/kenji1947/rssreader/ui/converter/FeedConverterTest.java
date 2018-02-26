@@ -4,8 +4,8 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
 import com.kenji1947.rssreader.App;
-import com.kenji1947.rssreader.data.api.model.ApiArticle;
-import com.kenji1947.rssreader.data.api.model.ApiFeed;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.model.ApiArticle;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.model.ApiFeed;
 import com.kenji1947.rssreader.data.database.objectbox.converter.FeedObjectBoxConverter;
 import com.kenji1947.rssreader.data.database.objectbox.model.ArticleModelObjectBox;
 import com.kenji1947.rssreader.data.database.objectbox.model.FeedModelObjectBox;

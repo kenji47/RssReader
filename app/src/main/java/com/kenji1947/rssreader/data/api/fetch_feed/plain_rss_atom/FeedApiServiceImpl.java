@@ -1,7 +1,8 @@
-package com.kenji1947.rssreader.data.api;
+package com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom;
 
-import com.kenji1947.rssreader.data.api.model.ApiConverter;
-import com.kenji1947.rssreader.data.api.parser.FeedParser;
+import com.kenji1947.rssreader.data.api.fetch_feed.feedly_api.FeedApiService;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.model.ApiConverter;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.parser.FeedParser;
 import com.kenji1947.rssreader.domain.entities.Feed;
 
 import java.io.IOException;

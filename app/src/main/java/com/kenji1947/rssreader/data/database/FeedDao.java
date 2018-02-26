@@ -1,7 +1,5 @@
 package com.kenji1947.rssreader.data.database;
 
-import com.kenji1947.rssreader.data.api.model.ApiArticle;
-import com.kenji1947.rssreader.data.api.model.ApiFeed;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.domain.exceptions.NoNetworkException;

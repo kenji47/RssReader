@@ -1,4 +1,4 @@
-package com.kenji1947.rssreader.data.api.model;
+package com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.model;
 
 import java.util.List;
 

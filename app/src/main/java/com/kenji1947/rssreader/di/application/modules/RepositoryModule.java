@@ -1,6 +1,6 @@
 package com.kenji1947.rssreader.di.application.modules;
 
-import com.kenji1947.rssreader.data.api.FeedApiService;
+import com.kenji1947.rssreader.data.api.fetch_feed.feedly_api.FeedApiService;
 import com.kenji1947.rssreader.data.database.ArticleDao;
 import com.kenji1947.rssreader.data.database.FeedDao;
 import com.kenji1947.rssreader.data.worker.preference.PreferenceManager;

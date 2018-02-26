@@ -1,7 +1,7 @@
 package com.kenji1947.rssreader.data.database.objectbox.converter;
 
-import com.kenji1947.rssreader.data.api.model.ApiArticle;
-import com.kenji1947.rssreader.data.api.model.ApiFeed;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.model.ApiArticle;
+import com.kenji1947.rssreader.data.api.fetch_feed.plain_rss_atom.model.ApiFeed;
 import com.kenji1947.rssreader.data.database.objectbox.model.ArticleModelObjectBox;
 import com.kenji1947.rssreader.data.database.objectbox.model.FeedModelObjectBox;
 import com.kenji1947.rssreader.domain.entities.Article;
