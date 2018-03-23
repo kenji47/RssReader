@@ -1,6 +1,7 @@
 package com.kenji1947.rssreader.di.application.modules;
 
-import com.kenji1947.rssreader.data.api.fetch_feed.feedly_api.FeedApiService;
+import com.kenji1947.rssreader.data.api.fetch_feed.FetchFeedApiService;
+import com.kenji1947.rssreader.data.api.search_feed.SearchFeedApiService;
 import com.kenji1947.rssreader.data.database.ArticleDao;
 import com.kenji1947.rssreader.data.database.FeedDao;
 import com.kenji1947.rssreader.data.worker.preference.PreferenceManager;
@@ -8,7 +9,7 @@ import com.kenji1947.rssreader.domain.repository.ArticleRepository;
 import com.kenji1947.rssreader.data.repository.ArticleRepositoryImpl;
 import com.kenji1947.rssreader.domain.repository.FeedRepository;
 import com.kenji1947.rssreader.data.repository.FeedRepositoryImpl;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import javax.inject.Singleton;
 
@@ -24,16 +25,17 @@ public class RepositoryModule {
 
     @Provides
     @Singleton
-    FeedRepository provideFeedRepository(FeedApiService feedService,
+    FeedRepository provideFeedRepository(FetchFeedApiService feedService,
                                          FeedDao feedDao,
-                                         SchedulersProvider schedulersProvider,
-                                         PreferenceManager preferenceManager) {
-        return new FeedRepositoryImpl(feedService, feedDao, schedulersProvider, preferenceManager);
+                                         RxSchedulersProvider schedulersProvider,
+                                         PreferenceManager preferenceManager,
+                                         SearchFeedApiService searchFeedApiService) {
+        return new FeedRepositoryImpl(feedService, feedDao, schedulersProvider, preferenceManager, searchFeedApiService);
     }
 
     @Provides
     @Singleton
-    ArticleRepository provideArticleRepository(ArticleDao articleDao, SchedulersProvider schedulersProvider) {
+    ArticleRepository provideArticleRepository(ArticleDao articleDao, RxSchedulersProvider schedulersProvider) {
         return new ArticleRepositoryImpl(articleDao, schedulersProvider);
     }
 

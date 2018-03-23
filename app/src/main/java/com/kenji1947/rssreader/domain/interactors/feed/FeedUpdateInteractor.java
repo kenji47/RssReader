@@ -1,19 +1,16 @@
 package com.kenji1947.rssreader.domain.interactors.feed;
 
 import com.kenji1947.rssreader.data.connectivity.ConnectivityReceiver;
+import com.kenji1947.rssreader.data.database.CommonUtils;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.domain.exceptions.NoNetworkException;
 import com.kenji1947.rssreader.domain.repository.FeedRepository;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -29,12 +26,12 @@ import timber.log.Timber;
 public class FeedUpdateInteractor {
     private FeedRepository feedRepository;
     private ConnectivityReceiver connectivityReceiver;
-    private SchedulersProvider schedulersProvider;
+    private RxSchedulersProvider schedulersProvider;
 
     @Inject
     public FeedUpdateInteractor(FeedRepository feedRepository,
                                 ConnectivityReceiver connectivityReceiver,
-                                SchedulersProvider schedulersProvider) {
+                                RxSchedulersProvider schedulersProvider) {
         this.feedRepository = feedRepository;
         this.connectivityReceiver = connectivityReceiver;
         this.schedulersProvider = schedulersProvider;
@@ -51,7 +48,7 @@ public class FeedUpdateInteractor {
                 .flatMap(feed -> feedRepository.getFeed(id));
     }
 
-    //Used in presenter
+
     public Single<List<Feed>> updateAllFeeds() {
         return connectivityReceiver.isConnected()
                 .flatMap(aBoolean -> aBoolean
@@ -75,7 +72,7 @@ public class FeedUpdateInteractor {
                 .flatMap(Observable::fromIterable)
                 .flatMap(feed -> fetchOnlyNewArticlesForFeed(feed).toObservable()) //catch error
                 .toList()
-                .flatMapCompletable(feeds -> feedRepository.saveFeeds(feeds));
+                .flatMapCompletable(feeds -> feedRepository.saveFeed(feeds));
 //                .flatMap(feed -> feedRepository
 //                        .saveArticlesForFeed(feed.id, feed.articles).toObservable()) //TODO Сохранять сразу весь список в транзакции
 //                .count()
@@ -83,6 +80,7 @@ public class FeedUpdateInteractor {
     }
 
     //Used by Update Service
+    //Used in presenter
     public Single<Integer> updateAllFeedsAndGetNewArticlesCount() {
         Timber.d("updateAllFeedsAndGetUpdatedCount");
         return connectivityReceiver.isConnected()
@@ -108,9 +106,28 @@ public class FeedUpdateInteractor {
                 });
     }
 
+    public Observable<Integer> updateAllFeedsAndGetNewArticlesCountObservable() {
+        Timber.d("updateAllFeedsAndGetNewArticlesCountObservable");
+        return connectivityReceiver.isConnected()
+                .flatMap(aBoolean -> aBoolean
+                        ? feedRepository.getFeeds()
+                        : Single.error(new NoNetworkException()))
+                .toObservable()
+                .flatMap(Observable::fromIterable)
+                .flatMap(feed -> {
+                    TimeUnit.SECONDS.sleep(2);
+                    return Observable.just(feed.articles.size());
+                });
+//                .flatMap(feed -> fetchOnlyNewArticlesForFeed(feed).toObservable())
+//                .flatMap(feed -> feedRepository
+//                        .saveArticlesForFeed(feed.id, feed.articles)
+//                        .toSingleDefault(feed.articles.size())
+//                        .toObservable());
+    }
+
 
     Single<Feed> fetchOnlyNewArticlesForFeed(Feed feedFromDb) {
-        return feedRepository.fetchFeed(feedFromDb.url) //TODO Catch error
+        return feedRepository.fetchFeed(feedFromDb.url) //TODO убрать /feed
                 .map(feedFromRemote -> {
 
 //                    Set<Article> articleSet = new HashSet<>();

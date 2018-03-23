@@ -1,14 +1,16 @@
 package com.kenji1947.rssreader.di.application;
 
-import com.kenji1947.rssreader.di.application.modules.AlarmSchedulerServiceModule;
 import com.kenji1947.rssreader.di.application.modules.ApiModule;
 import com.kenji1947.rssreader.di.application.modules.AppModule;
 import com.kenji1947.rssreader.di.application.modules.ConnectivityModule;
 import com.kenji1947.rssreader.di.application.modules.DatabaseModule;
+import com.kenji1947.rssreader.di.application.modules.FeedSyncWorkerModule;
+import com.kenji1947.rssreader.di.application.modules.NotificationManagerModule;
+import com.kenji1947.rssreader.di.application.modules.OkHttpInterceptorsModule;
 import com.kenji1947.rssreader.di.application.modules.RepositoryModule;
 import com.kenji1947.rssreader.di.application.modules.RouterModule;
-import com.kenji1947.rssreader.di.application.modules.SchedulerServiceModule;
-import com.kenji1947.rssreader.di.application.modules.SchedulersModule;
+import com.kenji1947.rssreader.di.application.modules.FeedSyncSchedulerModule;
+import com.kenji1947.rssreader.di.application.modules.RxSchedulersModule;
 import com.kenji1947.rssreader.di.application.modules.UtilsModule;
 
 import javax.inject.Singleton;
@@ -25,12 +27,15 @@ import dagger.Component;
         AppModule.class,
         RouterModule.class,
         RepositoryModule.class,
-        SchedulersModule.class,
+        RxSchedulersModule.class,
         DatabaseModule.class,
         ConnectivityModule.class,
-        SchedulerServiceModule.class,
+        FeedSyncSchedulerModule.class,
         //AlarmSchedulerServiceModule.class,
+        FeedSyncWorkerModule.class,
+        NotificationManagerModule.class,
         ApiModule.class,
+        OkHttpInterceptorsModule.class,
         UtilsModule.class})
 public interface AppComponent extends AppComponentExposes, AppComponentInjects {
 }

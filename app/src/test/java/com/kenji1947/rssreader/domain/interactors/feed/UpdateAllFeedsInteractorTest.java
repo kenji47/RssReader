@@ -5,7 +5,7 @@ import com.kenji1947.rssreader.data.connectivity.ConnectivityReceiver;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.domain.repository.FeedRepository;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class UpdateAllFeedsInteractorTest {
     @Mock
     private FeedRepository feedRepository;
     @Mock private ConnectivityReceiver connectivityReceiver;
-    private SchedulersProvider schedulersProvider = new SchedulersTrampoline();
+    private RxSchedulersProvider schedulersProvider = new SchedulersTrampoline();
 
     int feedListSize = 5;
     List<Feed> feedList;

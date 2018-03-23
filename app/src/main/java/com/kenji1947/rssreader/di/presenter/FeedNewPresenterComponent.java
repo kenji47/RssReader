@@ -12,7 +12,8 @@ import dagger.Component;
 @PresenterScope
 @Component(dependencies = AppComponent.class)
 public interface FeedNewPresenterComponent {
-    FeedNewPresenter provideFeedNew();
+
+    FeedNewPresenter provideFeedNewPresenter();
 
     final class Initializer {
 

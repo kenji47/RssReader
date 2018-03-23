@@ -1,32 +1,21 @@
 package com.kenji1947.rssreader.di.application.test.v21;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.support.v4.app.NotificationManagerCompat;
 
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.alarm_manager.FeedUpdateSchedulerAlarmManager;
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.alarm_manager.FeedUpdateSimpleService;
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.job_sceduler_presenter.FeedUpdateSchedulerJob;
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.job_sceduler_presenter.FeedUpdateService2;
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.job_sceduler_presenter.JobInfoFactory;
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.job_sceduler_presenter.JobSchedulerWrapper;
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.job_sceduler_presenter.JobSchedulerWrapperImpl;
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.job_scheduler.FeedUpdateService;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_sceduler_presenter.FeedUpdateSchedulerJob;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_sceduler_presenter.FeedUpdateService2;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_sceduler_presenter.JobInfoFactory;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_sceduler_presenter.JobSchedulerWrapper;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_sceduler_presenter.JobSchedulerWrapperImpl;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_scheduler.FeedUpdateService;
 import com.kenji1947.rssreader.data.worker.notifications.NotificationFactory;
-import com.kenji1947.rssreader.data.worker.notifications.NotificationFactoryImpl;
 import com.kenji1947.rssreader.data.worker.notifications.NotificationManager;
-import com.kenji1947.rssreader.data.worker.notifications.NotificationManagerImpl;
 import com.kenji1947.rssreader.data.worker.preference.PreferenceManager;
 import com.kenji1947.rssreader.domain.worker.FeedUpdateScheduler;
-import com.kenji1947.rssreader.presentation.MainActivity;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;

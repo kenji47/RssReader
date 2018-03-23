@@ -1,14 +1,16 @@
 package com.kenji1947.rssreader.data.repository;
 
-import com.kenji1947.rssreader.data.api.fetch_feed.feedly_api.FeedApiService;
+import com.kenji1947.rssreader.data.api.fetch_feed.FetchFeedApiService;
+import com.kenji1947.rssreader.data.api.search_feed.SearchFeedApiService;
 import com.kenji1947.rssreader.data.database.CommonUtils;
 import com.kenji1947.rssreader.data.database.FeedDao;
 import com.kenji1947.rssreader.data.worker.preference.PreferenceManager;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;
+import com.kenji1947.rssreader.domain.entities.SearchedFeed;
 import com.kenji1947.rssreader.domain.repository.AppPreferences;
 import com.kenji1947.rssreader.domain.repository.FeedRepository;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -26,19 +28,22 @@ import timber.log.Timber;
 
 public class FeedRepositoryImpl implements FeedRepository {
     private FeedDao feedDao;
-    private SchedulersProvider schedulersProvider;
+    private RxSchedulersProvider schedulersProvider;
     private PreferenceManager preferenceUtils;
-    private FeedApiService feedService;
+    private FetchFeedApiService feedService;
+    private SearchFeedApiService searchFeedApiService;
     private Subject<Boolean> updateFeedsInBackgroundSubject;
 
-    public FeedRepositoryImpl(FeedApiService feedService,
+    public FeedRepositoryImpl(FetchFeedApiService feedService,
                               FeedDao feedDao,
-                              SchedulersProvider schedulersProvider,
-                              PreferenceManager preferenceManager) {
+                              RxSchedulersProvider schedulersProvider,
+                              PreferenceManager preferenceManager,
+                              SearchFeedApiService searchFeedApiService) {
         this.feedDao = feedDao;
         this.schedulersProvider = schedulersProvider;
         this.preferenceUtils = preferenceManager;
         this.feedService = feedService;
+        this.searchFeedApiService = searchFeedApiService;
 
 
 //        this.updateFeedsInBackgroundSubject =
@@ -55,6 +60,12 @@ public class FeedRepositoryImpl implements FeedRepository {
             Timber.d("initUpdateFeedsInBackgroundSubject " + aBoolean);
             updateFeedsInBackgroundSubject.onNext(aBoolean);
         });
+    }
+
+    @Override
+    public Single<List<SearchedFeed>> searchFeed(String feedName) {
+        Timber.d("searchFeed " + feedName);
+        return searchFeedApiService.searchFeed(feedName).subscribeOn(schedulersProvider.getIo());
     }
 
     @Override
@@ -87,11 +98,18 @@ public class FeedRepositoryImpl implements FeedRepository {
     public Completable saveArticlesForFeed(long feedId, List<Article> articles) {
         return feedDao.updateFeed(feedId, articles);
     }
+
+
+
     @Override
-    public Completable saveFeeds(List<Feed> feeds) {
+    public Completable saveFeed(List<Feed> feeds) {
         return feedDao.updateFeeds(feeds);
     }
 
+    @Override
+    public Completable saveFeed(Feed feed) {
+        return feedDao.insertFeed(feed);
+    }
 
     @Override
     public Single<Boolean> feedExists(final String feedUrl) {
@@ -109,6 +127,26 @@ public class FeedRepositoryImpl implements FeedRepository {
             return feedService.fetchFeed(feedUrl)
                     .flatMapCompletable(feedDao::insertFeed);
         }).subscribeOn(schedulersProvider.getIo());
+    }
+
+    @Override
+    public Completable createNewFeed2(Feed feed) {
+        Timber.d("createNewFeed2 " + feed.url);
+        return Completable.defer(() -> {
+            CommonUtils.longOperation(); //TODO Перевести на fetchFeedNew
+            return feedService.fetchFeed(feed.url)
+                    .map(feed1 -> {
+                        feed.articles = feed1.articles;
+                        return feed;
+                    })
+                    .flatMapCompletable(feedDao::insertFeed);
+        }).subscribeOn(schedulersProvider.getIo());
+    }
+
+    @Override
+    public Single<List<Article>> fetchArticles(String feedUrl) {
+        Timber.d("fetchArticles " + feedUrl);
+        return Single.defer(() -> feedService.fetchArticles(feedUrl));
     }
 
     @Override

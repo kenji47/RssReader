@@ -107,7 +107,7 @@ public final class EarlParserWrapper implements ParserWrapper {
 //        if (parsedFeed instanceof RSSFeed) {
 //            Timber.d("RSSFeed " + feedUrl);
 //            Timber.d("ITEMS");
-//            for (Item item : parsedFeed.getItems()) {
+//            for (ArticleItem item : parsedFeed.getItems()) {
 //                RSSItem rssItem = (RSSItem) item;
 //
 //                Timber.d("title  " + rssItem.getTitle());
@@ -132,7 +132,7 @@ public final class EarlParserWrapper implements ParserWrapper {
 //        else if (parsedFeed instanceof AtomFeed) {
 //            Timber.d("AtomFeed " + feedUrl);
 //            Timber.d("ITEMS");
-//            for (Item item : parsedFeed.getItems()) {
+//            for (ArticleItem item : parsedFeed.getItems()) {
 //                AtomEntry atomEntry = (AtomEntry) item;
 //                Timber.d("title  " + atomEntry.getTitle());
 //

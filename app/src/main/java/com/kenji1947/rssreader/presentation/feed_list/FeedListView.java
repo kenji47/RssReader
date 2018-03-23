@@ -30,6 +30,9 @@ public interface FeedListView extends MvpView {
     @StateStrategyType(AddToEndSingleStrategy.class)
     void showProgress(boolean progress);
 
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void showMessage(String message);
+
     //@StateStrategyType(SkipStrategy.class)
     @StateStrategyType(OneExecutionStateStrategy.class)
     void showNewArticlesCountMessage(Integer count);

@@ -1,8 +1,8 @@
 package com.kenji1947.rssreader.di.application.test;
 
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.alarm_manager.FeedUpdateSimpleService;
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.job_sceduler_presenter.FeedUpdateService2;
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.job_scheduler.FeedUpdateService;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.alarm_manager.FeedUpdateSimpleService;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_sceduler_presenter.FeedUpdateService2;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_scheduler.FeedUpdateService;
 import com.kenji1947.rssreader.presentation.MainActivity;
 import com.kenji1947.rssreader.presentation.feed_list.FeedListFragment;
 

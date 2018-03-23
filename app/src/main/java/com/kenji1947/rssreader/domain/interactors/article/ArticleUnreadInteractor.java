@@ -1,7 +1,7 @@
 package com.kenji1947.rssreader.domain.interactors.article;
 
 import com.kenji1947.rssreader.domain.repository.ArticleRepository;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import javax.inject.Inject;
 
@@ -15,11 +15,11 @@ import io.reactivex.Single;
 public class ArticleUnreadInteractor {
 
     private ArticleRepository articleRepository;
-    private SchedulersProvider schedulersProvider;
+    private RxSchedulersProvider schedulersProvider;
 
 
     @Inject
-    public ArticleUnreadInteractor(ArticleRepository articleRepository, SchedulersProvider schedulersProvider) {
+    public ArticleUnreadInteractor(ArticleRepository articleRepository, RxSchedulersProvider schedulersProvider) {
         this.articleRepository = articleRepository;
         this.schedulersProvider = schedulersProvider;
     }

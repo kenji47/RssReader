@@ -4,12 +4,9 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,6 +17,10 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.kenji1947.rssreader.App;
 import com.kenji1947.rssreader.R;
 import com.kenji1947.rssreader.di.presenter.FeedNewPresenterComponent;
+import com.kenji1947.rssreader.domain.entities.Feed;
+import com.kenji1947.rssreader.domain.entities.SearchedFeed;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,7 +51,7 @@ public class FeedNewDialog extends MvpAppCompatDialogFragment implements FeedNew
 
     @ProvidePresenter
     FeedNewPresenter providePresenter() {
-        return FeedNewPresenterComponent.Initializer.init(App.INSTANCE.getAppComponent()).provideFeedNew();
+        return FeedNewPresenterComponent.Initializer.init(App.INSTANCE.getAppComponent()).provideFeedNewPresenter();
     }
 
     @Override
@@ -84,7 +85,8 @@ public class FeedNewDialog extends MvpAppCompatDialogFragment implements FeedNew
 
     private void onAddButtonPress() {
         Timber.d("onAddButtonPress");
-        presenter.addNewFeed(textInputEditText_feed_url.getText().toString());
+        //presenter.searchFeeds("verge");
+        //presenter.addNewFeed(textInputEditText_feed_url.getText().toString());
     }
 
 
@@ -97,18 +99,49 @@ public class FeedNewDialog extends MvpAppCompatDialogFragment implements FeedNew
     }
 
     @Override
+    public void showSearchFeedLoadingDialog() {
+
+    }
+
+    @Override
+    public void showSubscribeFeedLoadingDialog(String feedTitle) {
+
+    }
+
+    @Override
+    public void hideLoadingDialog() {
+
+    }
+
+    @Override
     public void showMessage(String message) {
         Timber.d("showMessage " + message);
         textView_error_message.setText(message);
     }
 
+    @Override
+    public void showErrorMessage(String message) {
+
+    }
 
     @Override
-    public void closeDialog() {
-        if (getTargetFragment() == null)
-            return;
-        getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null);
-        dismiss();
+    public void setSearchedFeeds(List<SearchedFeed> feeds) {
+
     }
+
+    @Override
+    public void showKeyboard(boolean isShowing) {
+
+    }
+
+
+
+//    @Override
+//    public void closeDialog() {
+//        if (getTargetFragment() == null)
+//            return;
+//        getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null);
+//        dismiss();
+//    }
 
 }

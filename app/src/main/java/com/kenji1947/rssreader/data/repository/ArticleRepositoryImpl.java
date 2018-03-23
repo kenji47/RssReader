@@ -3,7 +3,7 @@ package com.kenji1947.rssreader.data.repository;
 import com.kenji1947.rssreader.data.database.ArticleDao;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.repository.ArticleRepository;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -23,11 +23,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     private static final long CLICK_THROTTLE_WINDOW_MILLIS = 300L; //TODO Объяснить
 
     private ArticleDao articleDao;
-    private SchedulersProvider schedulersProvider;
+    private RxSchedulersProvider schedulersProvider;
     private Subject<Boolean> articleServiceUpdate = PublishSubject.create();
 
 
-    public ArticleRepositoryImpl(ArticleDao articleDao, SchedulersProvider schedulersProvider) {
+    public ArticleRepositoryImpl(ArticleDao articleDao, RxSchedulersProvider schedulersProvider) {
         this.articleDao = articleDao;
         this.schedulersProvider = schedulersProvider;
     }
@@ -51,6 +51,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
         return Single.defer(() -> articleDao.getArticles(feedId)).subscribeOn(schedulersProvider.getIo());
         //subscribeOn
         //return database.getArticles(feedId);
+    }
+
+    @Override
+    public Single<Article> getArticle(long articleId) {
+        return articleDao.getArticle(articleId).subscribeOn(schedulersProvider.getIo());
     }
 
     @Override

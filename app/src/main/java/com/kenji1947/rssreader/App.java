@@ -9,21 +9,20 @@ import com.kenji1947.rssreader.di.application.DaggerAppComponent;
 import com.kenji1947.rssreader.di.application.modules.ApiModule;
 import com.kenji1947.rssreader.di.application.modules.AppModule;
 import com.kenji1947.rssreader.di.application.modules.DatabaseModule;
+import com.kenji1947.rssreader.di.application.modules.FeedSyncWorkerModule;
+import com.kenji1947.rssreader.di.application.modules.NotificationManagerModule;
+import com.kenji1947.rssreader.di.application.modules.OkHttpInterceptorsModule;
 import com.kenji1947.rssreader.di.application.modules.RepositoryModule;
 import com.kenji1947.rssreader.di.application.modules.RouterModule;
-import com.kenji1947.rssreader.di.application.modules.SchedulerServiceModule;
-import com.kenji1947.rssreader.di.application.modules.SchedulersModule;
+import com.kenji1947.rssreader.di.application.modules.FeedSyncSchedulerModule;
+import com.kenji1947.rssreader.di.application.modules.RxSchedulersModule;
 import com.kenji1947.rssreader.di.application.modules.UtilsModule;
 import com.squareup.leakcanary.LeakCanary;
 
 import io.reactivex.plugins.RxJavaPlugins;
-import ru.terrakok.cicerone.Cicerone;
-import ru.terrakok.cicerone.NavigatorHolder;
-import ru.terrakok.cicerone.Router;
 import timber.log.Timber;
 
 import static android.util.Log.ERROR;
-import static java.util.logging.Level.WARNING;
 
 /**
  * Created by kenji1947 on 11.11.2017.
@@ -42,7 +41,7 @@ public class App extends Application {
 
         initAppComponent(this);
         initTimber();
-        initLeakCanary();
+        //initLeakCanary();
         initRxJava();
 
         Timber.d("onCreate");
@@ -63,10 +62,13 @@ public class App extends Application {
                 .appModule(new AppModule(app))
                 .repositoryModule(new RepositoryModule())
                 .databaseModule(new DatabaseModule())
-                .schedulersModule(new SchedulersModule())
+                .rxSchedulersModule(new RxSchedulersModule())
                 .routerModule(new RouterModule())
-                .schedulerServiceModule(new SchedulerServiceModule())
-                .apiModule(new ApiModule())
+                .notificationManagerModule(new NotificationManagerModule())
+                .feedSyncSchedulerModule(new FeedSyncSchedulerModule())
+                .feedSyncWorkerModule(new FeedSyncWorkerModule())
+                .apiModule(new ApiModule("https://cloud.feedly.com"))
+                .okHttpInterceptorsModule(new OkHttpInterceptorsModule())
                 .utilsModule(new UtilsModule())
                 .build();
 

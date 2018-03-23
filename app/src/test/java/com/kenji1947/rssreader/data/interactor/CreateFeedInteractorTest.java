@@ -6,7 +6,7 @@ import com.kenji1947.rssreader.domain.exceptions.FeedAlreadySubscribedException;
 import com.kenji1947.rssreader.domain.exceptions.NoNetworkException;
 import com.kenji1947.rssreader.domain.interactors.feed.CreateNewFeedInteractor;
 import com.kenji1947.rssreader.domain.repository.FeedRepository;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class CreateFeedInteractorTest {
     @Mock
     private ConnectivityReceiver connectivityReceiver;
 
-    private SchedulersProvider schedulersProvider = new SchedulersTrampoline();
+    private RxSchedulersProvider schedulersProvider = new SchedulersTrampoline();
 
     private CreateNewFeedInteractor interactor;
 

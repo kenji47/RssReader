@@ -20,6 +20,8 @@ public interface ArticleRepository {
 
     Single<List<Article>> getArticles(long feedId);
 
+    Single<Article> getArticle(long articleId);
+
     Observable<List<Article>> getArticlesAndObserve(long feedId);
 
     Single<List<Article>> getFavouriteArticles();

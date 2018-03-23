@@ -17,12 +17,15 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.kenji1947.rssreader.App;
 import com.kenji1947.rssreader.R;
+import com.kenji1947.rssreader.data.worker.image_loader.ImageLoader;
 import com.kenji1947.rssreader.di.presenter.ArticleListPresenterComponent;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.presentation.article_detail.ArticleDetailFragment;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,6 +62,8 @@ public class ArticleListFragment extends MvpAppCompatFragment implements Article
     private List<Article> articles;
     private ArticleListAdapter adapter;
 
+    @Inject
+    ImageLoader imageLoader;
 
     @InjectPresenter
     ArticleListPresenter presenter;
@@ -105,6 +110,7 @@ public class ArticleListFragment extends MvpAppCompatFragment implements Article
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         isFavMode = getFavModeStatusFromArguments();
+        App.INSTANCE.getAppComponent().inject(this);
     }
 
     @Nullable
@@ -135,7 +141,7 @@ public class ArticleListFragment extends MvpAppCompatFragment implements Article
     }
 
     private void initList() {
-        adapter = new ArticleListAdapter();
+        adapter = new ArticleListAdapter(imageLoader);
 
         adapter.onItemClick().subscribe(this::onItemClick);
         adapter.onFavouriteArticleClick().subscribe(this::onItemFav);

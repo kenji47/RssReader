@@ -82,6 +82,8 @@ public class DataLab {
             Article article = new Article(
                     article_title + i + " " + feedUrl,
                     article_link + i + " " + feedUrl,
+                    "",
+                    "",
                      time++,
                     true,
                     false
@@ -111,6 +113,8 @@ public class DataLab {
             Article article = new Article(
                     article_title + "_" + uuid + " " + url,
                     article_link + "_" + uuid + " " + url,
+                     "",
+                     "",
                      time++,
                     true,
                     false

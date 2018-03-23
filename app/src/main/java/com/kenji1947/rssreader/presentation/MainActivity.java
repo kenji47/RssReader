@@ -17,6 +17,7 @@ import com.kenji1947.rssreader.presentation.article_detail.ArticleDetailFragment
 import com.kenji1947.rssreader.presentation.article_list.ArticleListArgumentHolder;
 import com.kenji1947.rssreader.presentation.article_list.ArticleListFragment;
 import com.kenji1947.rssreader.presentation.base.DummyActivity;
+import com.kenji1947.rssreader.presentation.common.BackButtonListener;
 import com.kenji1947.rssreader.presentation.common.ShowDialog;
 import com.kenji1947.rssreader.presentation.feed_list.FeedListFragment;
 import com.kenji1947.rssreader.presentation.new_feed.FeedNewDialog;
@@ -90,7 +91,8 @@ public class MainActivity extends AppCompatActivity {
                 super.setupFragmentTransactionAnimation(command, currentFragment, nextFragment, fragmentTransaction);
 
                 if (nextFragment instanceof FeedNewFragment) {
-                    fragmentTransaction.setCustomAnimations(R.anim.fragment_fade_in, R.anim.fragment_fade_out);
+                    //TODO Белый экран при смене ориентации
+                    //fragmentTransaction.setCustomAnimations(R.anim.fragment_fade_in, R.anim.fragment_fade_out);
                 } else {
                     fragmentTransaction.setCustomAnimations(
                             //TODO FragmentTransaction.TRANSIT_FRAGMENT_FADE
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
                     case Screens.ARTICLE_FAV_LIST_SCREEN: return ArticleListFragment.newInstanceFavMode();
 
-                    case Screens.ARTICLE_DETAIL_SCREEN: return ArticleDetailFragment.newInstance((String) data);
+                    case Screens.ARTICLE_DETAIL_SCREEN: return ArticleDetailFragment.newInstance((Long) data);
 
                     case Screens.SETTINGS_SCREEN: return SettingsFragment.newInstance();
 
@@ -157,6 +159,18 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
 //        startActivity(new Intent(this, DummyActivity.class));
 //        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.frameLayout_container);
+        if (fragment != null
+                && fragment instanceof BackButtonListener
+                && ((BackButtonListener) fragment).onBackPressed()) {
+            return;
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void replaceFragment(Class clazz, String TAG) {

@@ -34,6 +34,7 @@ import com.kenji1947.rssreader.data.worker.image_loader.ImageLoader;
 import com.kenji1947.rssreader.di.presenter.FeedListPresenterComponent;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.presentation.AdapterOverflowMenuHolder;
+import com.kenji1947.rssreader.presentation.common.BackButtonListener;
 import com.kenji1947.rssreader.presentation.common.DeleteDialog;
 import com.kenji1947.rssreader.presentation.common.ListDataDiffHolder;
 import com.kenji1947.rssreader.presentation.common.ThemedSnackbar;
@@ -159,7 +160,6 @@ public class FeedListFragment extends MvpAppCompatFragment implements FeedListVi
         super.onPause();
 
         //if (!getActivity().isChangingConfigurations())
-
     }
 
     private void initToolbar() {
@@ -186,7 +186,8 @@ public class FeedListFragment extends MvpAppCompatFragment implements FeedListVi
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
         swipeRefreshLayout_refresh_feeds.setOnRefreshListener(() -> {
-            presenter.updateAllFeedsNewArticlesCount();
+            //presenter.updateAllFeedsNewArticlesCount();
+            presenter.syncFeeds();
         });
     }
 
@@ -271,10 +272,11 @@ public class FeedListFragment extends MvpAppCompatFragment implements FeedListVi
 
     //TODO Move dialog to Navigator
     private void showNewFeedDialog() {
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        FeedNewDialog dialog = FeedNewDialog.newInstance();
-        dialog.setTargetFragment(this, 911);
-        dialog.show(fm, "TAG_DIALOG_SEARCH_RADIUS");
+        presenter.showAddNewFeed();
+//        FragmentManager fm = getActivity().getSupportFragmentManager();
+//        FeedNewDialog dialog = FeedNewDialog.newInstance();
+//        dialog.setTargetFragment(this, 911);
+//        dialog.show(fm, "TAG_DIALOG_SEARCH_RADIUS");
     }
 
     //TODO Change to interface callback?
@@ -347,6 +349,12 @@ public class FeedListFragment extends MvpAppCompatFragment implements FeedListVi
                 .setAction(R.string.snackbar_action_button_retry, view -> {
                     presenter.updateAllFeedsNewArticlesCount();
                 }).show();
+    }
+
+    @Override
+    public void showMessage(String message) {
+        Snackbar snackbar = Snackbar.make(coordinator_top, message, Snackbar.LENGTH_SHORT);
+        snackbar.show();
     }
 
     @Override

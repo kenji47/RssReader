@@ -1,6 +1,6 @@
 package com.kenji1947.rssreader.data.util;
 
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -10,7 +10,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by kenji1947 on 07.11.2017.
  */
 
-public class AppSchedulers implements SchedulersProvider {
+public class AppSchedulers implements RxSchedulersProvider {
     @Override
     public Scheduler getMain() {
         return AndroidSchedulers.mainThread();

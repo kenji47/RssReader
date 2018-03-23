@@ -108,10 +108,10 @@ public class FeedBackgroundUpdatesTest {
         device.openNotification();
         UiObject notificationTitle = device
                 .findObject(new UiSelector().text(
-                        EspressoOperations.getString(R.string.notification_title, mainActivityActivityTestRule)));
+                        EspressoOperations.getString(R.string.notification_feed_updated_title, mainActivityActivityTestRule)));
 
         String text = mainActivityActivityTestRule.getActivity()
-                .getString(R.string.notification_text, newArticlesCount, unreadArticlesCount);
+                .getString(R.string.notification_feed_updated_text, newArticlesCount, unreadArticlesCount);
         UiObject notificationText = device
                 .findObject(new UiSelector().text(text));
 
@@ -153,7 +153,7 @@ public class FeedBackgroundUpdatesTest {
         device.openNotification();
         UiObject notificationTitle = device
                 .findObject(new UiSelector().text(
-                        EspressoOperations.getString(R.string.notification_title, mainActivityActivityTestRule)));
+                        EspressoOperations.getString(R.string.notification_feed_updated_title, mainActivityActivityTestRule)));
 
         device.pressHome();
     }
@@ -161,9 +161,9 @@ public class FeedBackgroundUpdatesTest {
     private void findObj() throws UiObjectNotFoundException {
         UiObject notificationTitle = device
                 .findObject(new UiSelector().text(
-                        EspressoOperations.getString(R.string.notification_title, mainActivityActivityTestRule)));
+                        EspressoOperations.getString(R.string.notification_feed_updated_title, mainActivityActivityTestRule)));
 
-        String text = mainActivityActivityTestRule.getActivity().getString(R.string.notification_text, 3, 5);
+        String text = mainActivityActivityTestRule.getActivity().getString(R.string.notification_feed_updated_text, 3, 5);
         UiObject notificationText = device
                 .findObject(new UiSelector().text(text));
 

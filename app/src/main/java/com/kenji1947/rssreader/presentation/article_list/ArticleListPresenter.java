@@ -7,7 +7,7 @@ import com.kenji1947.rssreader.domain.interactors.article.ArticleFavouriteIntera
 import com.kenji1947.rssreader.domain.interactors.article.ArticleUnreadInteractor;
 import com.kenji1947.rssreader.domain.interactors.article.ArticlesCrudInteractor;
 import com.kenji1947.rssreader.domain.interactors.article.ObserveArticlesModificationInteractor;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 import com.kenji1947.rssreader.presentation.Screens;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class ArticleListPresenter extends MvpPresenter<ArticleListView> {
     private ArticleFavouriteInteractor articleFavouriteInteractor;
     private ArticleUnreadInteractor articleUnreadInteractor;
     private ObserveArticlesModificationInteractor observeArticleUpdatesInteractor;
-    private SchedulersProvider schedulersProvider;
+    private RxSchedulersProvider schedulersProvider;
     private Router router;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -41,7 +41,7 @@ public class ArticleListPresenter extends MvpPresenter<ArticleListView> {
                                 ArticleFavouriteInteractor articleFavouriteInteractor,
                                 ArticleUnreadInteractor articleUnreadInteractor,
                                 ObserveArticlesModificationInteractor observeArticleUpdatesInteractor,
-                                SchedulersProvider schedulersProvider,
+                                RxSchedulersProvider schedulersProvider,
                                 Router router) {
         this.feedId = feedId;
         this.isFavModeOn = isFavModeOn;
@@ -135,7 +135,8 @@ public class ArticleListPresenter extends MvpPresenter<ArticleListView> {
     }
 
     void showArticle(int pos) {
-        router.navigateTo(Screens.ARTICLE_DETAIL_SCREEN, articleList.get(pos).link);
+        //router.navigateTo(Screens.ARTICLE_DETAIL_SCREEN, articleList.get(pos).link);
+        router.navigateTo(Screens.ARTICLE_DETAIL_SCREEN, articleList.get(pos).id);
     }
 
     @Override

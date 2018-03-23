@@ -6,9 +6,8 @@ import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.kenji1947.rssreader.data.worker.error_handler.ErrorHandler;
 import com.kenji1947.rssreader.data.worker.preference.PreferenceManager;
-import com.kenji1947.rssreader.domain.interactors.feed.BackgroundFeedUpdateInteractor;
-import com.kenji1947.rssreader.domain.interactors.feed.CreateNewFeedInteractor;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.interactors.feed.FeedSyncInteractor;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import javax.inject.Inject;
 
@@ -22,8 +21,8 @@ import timber.log.Timber;
 
 @InjectViewState
 public class SettingsPresenter extends MvpPresenter<SettingsView> {
-    private SchedulersProvider schedulersProvider;
-    private BackgroundFeedUpdateInteractor backgroundFeedUpdateInteractor;
+    private RxSchedulersProvider schedulersProvider;
+    private FeedSyncInteractor backgroundFeedUpdateInteractor;
     private PreferenceManager preferenceManager;
     private ErrorHandler errorHandler;
     private Router router;
@@ -47,8 +46,8 @@ public class SettingsPresenter extends MvpPresenter<SettingsView> {
     };
 
     @Inject
-    public SettingsPresenter(SchedulersProvider schedulersProvider,
-                             BackgroundFeedUpdateInteractor backgroundFeedUpdateInteractor,
+    public SettingsPresenter(RxSchedulersProvider schedulersProvider,
+                             FeedSyncInteractor backgroundFeedUpdateInteractor,
                              PreferenceManager preferenceManager,
                              ErrorHandler errorHandler,
                              Router router) {

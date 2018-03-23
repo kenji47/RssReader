@@ -8,11 +8,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kenji1947.rssreader.R;
+import com.kenji1947.rssreader.data.worker.image_loader.ImageLoader;
 import com.kenji1947.rssreader.domain.entities.Article;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,12 +36,17 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
     private Subject<Integer> onItemClickSubject = BehaviorSubject.create();
     private Subject<Integer> onItemFavouriteClickSubject = BehaviorSubject.create();
 
+    private final ImageLoader imageLoader;
+
+    ArticleListAdapter(final ImageLoader imageLoader) {
+        this.imageLoader = imageLoader;
+    }
 
     @Override
     public ArticleHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_article, parent, false);
-        return new ArticleHolder(itemView, onItemClickSubject, onItemFavouriteClickSubject);
+        return new ArticleHolder(itemView, imageLoader, onItemClickSubject, onItemFavouriteClickSubject);
     }
 
     @Override
@@ -81,10 +89,13 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
     }
 
     public static class ArticleHolder extends RecyclerView.ViewHolder {
+        public @BindView(R.id.imageView_article_icon) ImageView imageView_article_icon;
         public @BindView(R.id.textView_article_title) TextView textView_article_title;
         public @BindView(R.id.textView_article_date) TextView textView_article_date;
         public @BindView(R.id.textView_article_new_indicator) TextView textView_article_new_indicator;
         public @BindView(R.id.imageView_article_favourite_indicator) ImageView imageView_article_favourite_indicator;
+
+        private final ImageLoader imageLoader;
 
         private Article article;
 
@@ -92,11 +103,13 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         private Subject<Integer> onItemFavouriteClickSubject;
 
         public ArticleHolder(View itemView,
+                             final ImageLoader imageLoader,
                              Subject<Integer> onItemClickSubject,
                              Subject<Integer> onItemFavouriteClickSubject) {
             super(itemView);
             this.onItemClickSubject = onItemClickSubject;
             this.onItemFavouriteClickSubject = onItemFavouriteClickSubject;
+            this.imageLoader = imageLoader;
             ButterKnife.bind(this, itemView);
         }
 
@@ -112,6 +125,13 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                     R.drawable.ic_favorite : R.drawable.ic_not_favorite);
 
             textView_article_new_indicator.setVisibility(article.isNew ? View.VISIBLE : View.GONE);
+
+            imageLoader.loadImage(
+                    article.imageLink,
+                    imageView_article_icon,
+                    R.drawable.secondary_circle,
+                    R.drawable.secondary_circle
+            );
             Timber.d("imageLink: " + article.imageLink);
         }
 

@@ -30,14 +30,26 @@ public class NotificationFactoryImpl implements NotificationFactory {
         return notificationBuilder.setAutoCancel(true)
                 .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
                 .setSmallIcon(R.drawable.notification_icon)
-                .setContentTitle(resources.getString(R.string.notification_title))
-                .setContentText(resources.getString(R.string.notification_text))
+                .setContentTitle(resources.getString(R.string.notification_feed_updated_title))
+                .setContentText(resources.getString(R.string.notification_feed_updated_text))
                 .setContentIntent(contentIntent)
                 .build();
     }
 
     @Override
     public Notification createNewArticlesNotificationNew(String title, String content, PendingIntent contentIntent) {
+        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
+        return notificationBuilder.setAutoCancel(true)
+                .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
+                .setSmallIcon(R.drawable.notification_icon)
+                .setContentTitle(title)
+                .setContentText(content)
+                .setContentIntent(contentIntent)
+                .build();
+    }
+
+    @Override
+    public Notification createFeedSyncNotification(String title, String content, PendingIntent contentIntent) {
         final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
         return notificationBuilder.setAutoCancel(true)
                 .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))

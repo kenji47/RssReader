@@ -3,14 +3,21 @@ package com.kenji1947.rssreader.presentation.new_feed;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.kenji1947.rssreader.data.worker.error_handler.ErrorHandler;
+import com.kenji1947.rssreader.domain.entities.Feed;
+import com.kenji1947.rssreader.domain.entities.SearchedFeed;
 import com.kenji1947.rssreader.domain.interactors.feed.CreateNewFeedInteractor;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.interactors.feed.FeedCrudInteractor;
+import com.kenji1947.rssreader.domain.interactors.feed.SearchFeedsInteractor;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 import com.kenji1947.rssreader.presentation.Screens;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
 import ru.terrakok.cicerone.Router;
+import timber.log.Timber;
 
 /**
  * Created by chamber on 13.12.2017.
@@ -19,22 +26,39 @@ import ru.terrakok.cicerone.Router;
 @InjectViewState
 public class FeedNewPresenter extends MvpPresenter<FeedNewView> {
 
-    private SchedulersProvider schedulersProvider;
+    private boolean isLoading;
+    private SearchFeedsInteractor searchFeedsInteractor;
+    private FeedCrudInteractor feedCrudInteractor;
+    private RxSchedulersProvider schedulersProvider;
     private CreateNewFeedInteractor createFeedInteractor;
     private ErrorHandler errorHandler;
     private Router router;
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
+    private List<SearchedFeed> searchedFeeds;
+    private List<Feed> subscribedFeeds;
+
     @Inject
     public FeedNewPresenter(CreateNewFeedInteractor createFeedInteractor,
-                            SchedulersProvider schedulersProvider,
+                            SearchFeedsInteractor searchFeedsInteractor,
+                            FeedCrudInteractor feedCrudInteractor,
+                            RxSchedulersProvider schedulersProvider,
                             ErrorHandler errorHandler,
                             Router router) {
+        this.searchFeedsInteractor = searchFeedsInteractor;
+        this.feedCrudInteractor = feedCrudInteractor;
         this.schedulersProvider = schedulersProvider;
         this.createFeedInteractor = createFeedInteractor;
         this.errorHandler = errorHandler;
         this.router = router;
+    }
+
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        //show keyboard on start up
+        getViewState().showKeyboard(true);
     }
 
     @Override
@@ -50,31 +74,69 @@ public class FeedNewPresenter extends MvpPresenter<FeedNewView> {
     // нет интернета во время запроса
     // ресурса с данным урл не существует
 
-    public void addNewFeed(String feedUrl) {
-        compositeDisposable.add(createFeedInteractor
-                .createNewFeed(feedUrl)
-                .observeOn(schedulersProvider.getMain())
-                .doOnSubscribe(disposable -> {getViewState().showProgress(true);})
-//                .doAfterTerminate(() -> {getViewState().showProgress(false);})
-                .subscribe(this::onCreateFeedCompletion, this::onCreateFeedError)
+
+    //---
+    public void searchFeeds(String feedName) {
+        getViewState().showKeyboard(false);
+        compositeDisposable.add(
+                searchFeedsInteractor.searchFeed(feedName)
+                        .observeOn(schedulersProvider.getMain())
+                        .doOnSubscribe(disposable -> {
+                            getViewState().showSearchFeedLoadingDialog();
+                            isLoading = true;
+                        })
+                        .doAfterTerminate(() -> {
+                            getViewState().hideLoadingDialog();
+                            isLoading = false;
+                        })
+                        .subscribe(this::onSearchFeedsSuccess, this::onSearchFeedsError)
         );
     }
 
-    private void onCreateFeedCompletion() {
-        getViewState().showProgress(false);
-        getViewState().closeDialog();
-
-        //TODO Not used
-        //router.exitWithResult(Screens.RESULT_NEW_FEED_SCREEN_UPDATE, true);
+    private void onSearchFeedsSuccess(List<SearchedFeed> searchedFeeds) {
+        Timber.e("onSearchFeedsSuccess " + searchedFeeds.size());
+        this.searchedFeeds = searchedFeeds;
+        //searchedFeeds.get(1).isSubscribed = true;
+        getViewState().setSearchedFeeds(searchedFeeds);
     }
 
-    private void onCreateFeedError(Throwable throwable) {
-        getViewState().showProgress(false);
-        errorHandler.handleErrorScreenNewFeed(throwable, s -> getViewState().showMessage(s));
+    private void onSearchFeedsError(Throwable throwable) {
+        Timber.e("onSearchFeedsError " + throwable);
+        errorHandler.handleErrorScreenNewFeed(throwable, s -> getViewState().showErrorMessage(s));
     }
 
-    //TODO Not used
+    public void subscribeToFeed(int pos) {
+        Timber.d("subscribeToFeed pos: " + pos + " title: " + searchedFeeds.get(pos).title);
+
+        if (searchedFeeds.get(pos).isSubscribed)
+            getViewState().showMessage("You already subscribed to this feed");
+        else {
+            compositeDisposable.add(createFeedInteractor.createNewFeed2(searchedFeeds.get(pos))
+                    .observeOn(schedulersProvider.getMain())
+                    .doOnSubscribe(disposable -> getViewState().showSubscribeFeedLoadingDialog(searchedFeeds.get(pos).title))
+                    .doAfterTerminate(() -> getViewState().hideLoadingDialog())
+                    .subscribe(() -> {
+                                Timber.d("subscribeToFeed complete");
+                                router.exitWithResult(Screens.RESULT_NEW_FEED_SCREEN_UPDATE, searchedFeeds.get(pos).title);
+                                //return to feed list
+                                //show added toast
+                            },
+                            throwable -> {
+                                Timber.e("subscribeToFeed error " + throwable);
+                                throwable.printStackTrace();
+                                errorHandler.handleErrorScreenNewFeed(throwable, s -> getViewState().showErrorMessage(s));
+                            }));
+        }
+    }
+
     public void back() {
-        router.backTo(Screens.FEED_LIST_SCREEN);
+        if (isLoading) {
+            compositeDisposable.clear();
+            getViewState().hideLoadingDialog();
+            isLoading = false;
+        } else {
+            router.backTo(Screens.FEED_LIST_SCREEN);
+        }
+
     }
 }

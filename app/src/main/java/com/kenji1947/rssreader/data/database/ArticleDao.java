@@ -16,6 +16,9 @@ public interface ArticleDao {
     Observable<List<Article>> getArticlesAndObserve(long feedId);
 
     Single<List<Article>> getArticles(long feedId);
+
+    Single<Article> getArticle(long articleId);
+
     Single<List<Article>> getFavouriteArticles();
     Completable markArticleAsRead(long articleId);
     Completable favouriteArticle(long articleId);

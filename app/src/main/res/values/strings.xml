@@ -2,6 +2,8 @@
     <string name="app_name">RssReader</string>
 
     <string name="empty_list_feed">Create new feed</string>
+    <string name="feed_search_nothing_found">Nothing found</string>
+    <string name="feed_search_add_new_feed">Search new feed</string>
 
     <string name="NEW">NEW</string>
     <string name="feed_url">Feed URL</string>
@@ -14,8 +16,14 @@
     <string name="incorrect_feed_url_message">Incorrect feed URL, please check and try again</string>
 
 
-    <string name="notification_title">New articles!</string>
-    <string name="notification_text">You have %1$s new articles. %2$s articles unread</string>
+    <string name="notification_feed_updated_title">New articles!</string>
+    <string name="notification_feed_updated_text">You have %1$s new articles. %2$s articles unread</string>
+
+    <string name="notification_feed_sync_update_title">Syncing feeds</string>
+    <string name="notification_feed_sync_update_text">%1$s feed updated from %2$s</string>
+
+    <string name="notification_feed_sync_done_title">Syncing complete</string>
+    <string name="notification_feed_sync_done_text">%1$s new articles</string>
 
     //feed list appbar menu
     <string name="notifications_toggle_menu">Toggle notifications</string>

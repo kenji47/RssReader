@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v4.app.NotificationManagerCompat;
 
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.alarm_manager.FeedUpdateSchedulerAlarmManager;
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.alarm_manager.FeedUpdateSimpleService;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.alarm_manager.FeedUpdateSchedulerAlarmManager;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.alarm_manager.FeedUpdateSimpleService;
 import com.kenji1947.rssreader.data.worker.notifications.NotificationFactory;
 import com.kenji1947.rssreader.data.worker.notifications.NotificationFactoryImpl;
 import com.kenji1947.rssreader.data.worker.notifications.NotificationManager;
@@ -27,6 +27,7 @@ import dagger.Provides;
  * Created by chamber on 10.12.2017.
  */
 
+//TODO Delete
 @Module
 public class AlarmSchedulerServiceModule {
 
@@ -35,8 +36,7 @@ public class AlarmSchedulerServiceModule {
     FeedUpdateScheduler provideFeedUpdateScheduler(
             PreferenceManager preferenceManager,
             AlarmManager alarmManager,
-            @Named("FeedUpdateServicePendingIntent") PendingIntent servicePendingIntent
-    ) {
+            @Named("FeedUpdateServicePendingIntent") PendingIntent servicePendingIntent) {
         return new FeedUpdateSchedulerAlarmManager(preferenceManager, alarmManager, servicePendingIntent);
     }
 

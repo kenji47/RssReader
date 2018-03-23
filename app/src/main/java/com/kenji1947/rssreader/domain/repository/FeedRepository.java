@@ -2,6 +2,7 @@ package com.kenji1947.rssreader.domain.repository;
 
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;
+import com.kenji1947.rssreader.domain.entities.SearchedFeed;
 
 import java.util.List;
 
@@ -15,17 +16,25 @@ import io.reactivex.Single;
 
 public interface FeedRepository {
 
+    Single<List<SearchedFeed>> searchFeed(String feedName);
+
     Single<Feed> getFeed(long id);
     Single<List<Feed>> getFeeds();
     Completable saveArticlesForFeed(long feedId, List<Article> articles);
 
-    Completable saveFeeds(List<Feed> feeds);
+    Completable saveFeed(List<Feed> feeds);
+
+    Completable saveFeed(Feed feed);
 
     Single<Boolean> feedExists(String feedUrl);
 
     Observable<List<Feed>> getFeedsAndObserve();
 
     Completable deleteFeed(long feedId);
+
+    Completable createNewFeed2(Feed feed);
+
+    Single<List<Article>> fetchArticles(String feedUrl);
 
     Single<Feed> fetchFeed(String feedUrl);
     Completable createNewFeed(String feedUrl);

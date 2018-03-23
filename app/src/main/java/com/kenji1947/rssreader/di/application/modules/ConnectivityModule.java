@@ -8,7 +8,7 @@ import com.kenji1947.rssreader.data.connectivity.ConnectivityManagerWrapperImpl;
 import com.kenji1947.rssreader.data.connectivity.ConnectivityReceiver;
 import com.kenji1947.rssreader.data.connectivity.ConnectivityReceiverImpl;
 import com.kenji1947.rssreader.data.connectivity.NetworkUtils;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import javax.inject.Singleton;
 
@@ -26,7 +26,7 @@ public class ConnectivityModule {
     @Singleton
     ConnectivityReceiver provideConnectivityReceiver(Context context,
                                                      NetworkUtils networkUtils,
-                                                     SchedulersProvider schedulersProvider) {
+                                                     RxSchedulersProvider schedulersProvider) {
         return new ConnectivityReceiverImpl(context, networkUtils, schedulersProvider);
     }
 

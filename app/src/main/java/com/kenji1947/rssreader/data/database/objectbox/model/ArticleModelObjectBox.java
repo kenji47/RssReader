@@ -17,6 +17,7 @@ public class ArticleModelObjectBox {
 
     public String title;
     public String link;
+    public String content;
     public long publicationDate;
     public String imageLink;
 
@@ -26,24 +27,30 @@ public class ArticleModelObjectBox {
     public ArticleModelObjectBox() {
     }
 
-    public ArticleModelObjectBox(String title, String link, long publicationDate) {
+    public ArticleModelObjectBox(String title, String link, String imageLink, String content, long publicationDate) {
         this.title = title;
         this.link = link;
+        this.imageLink = imageLink;
+        this.content = content;
         this.publicationDate = publicationDate;
     }
 
-    public ArticleModelObjectBox(String title, String link, long publicationDate, boolean isNew, boolean isFavourite) {
+    public ArticleModelObjectBox(String title, String link, String imageLink, String content, long publicationDate, boolean isNew, boolean isFavourite) {
         this.title = title;
         this.link = link;
+        this.imageLink = imageLink;
+        this.content = content;
         this.publicationDate = publicationDate;
         this.isNew = isNew;
         this.isFavourite = isFavourite;
     }
 
-    public ArticleModelObjectBox(long id, String title, String link, long publicationDate, boolean isNew, boolean isFavourite) {
+    public ArticleModelObjectBox(long id, String title, String link, String imageLink, String content, long publicationDate, boolean isNew, boolean isFavourite) {
         this.id = id;
         this.title = title;
         this.link = link;
+        this.imageLink = imageLink;
+        this.content = content;
         this.publicationDate = publicationDate;
         this.isNew = isNew;
         this.isFavourite = isFavourite;

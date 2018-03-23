@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -19,13 +19,13 @@ public final class ConnectivityReceiverImpl extends BroadcastReceiver implements
     private static final String ACTION_CONNECTIVITY_CHANGE = "android.net.conn.CONNECTIVITY_CHANGE";
 
     private final NetworkUtils networkUtils;
-    private final SchedulersProvider schedulersProvider;
+    private final RxSchedulersProvider schedulersProvider;
     private final PublishSubject<Boolean> subject;
 
     private boolean isConnected;
 
     public ConnectivityReceiverImpl(final Context context, final NetworkUtils networkUtils,
-                                    final SchedulersProvider schedulersProvider) {
+                                    final RxSchedulersProvider schedulersProvider) {
         this.networkUtils = networkUtils;
         this.schedulersProvider = schedulersProvider;
         final IntentFilter intentFilter = new IntentFilter(ACTION_CONNECTIVITY_CHANGE);//TODO

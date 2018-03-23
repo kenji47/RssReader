@@ -67,7 +67,12 @@ public class ArticleDaoObjectBox implements ArticleDao{
                 .toList();
     }
 
-
+    @Override
+    public Single<Article> getArticle(long articleId) {
+        return Single
+                .fromCallable(() -> articleBox.get(articleId))
+                .map(articleModelObjectBox -> converter.dbToDomain(articleModelObjectBox));
+    }
 
     @Override
     public Single<List<Article>> getFavouriteArticles() {

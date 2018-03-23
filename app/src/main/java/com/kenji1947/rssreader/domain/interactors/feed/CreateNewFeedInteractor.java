@@ -1,10 +1,12 @@
 package com.kenji1947.rssreader.domain.interactors.feed;
 
 import com.kenji1947.rssreader.data.connectivity.ConnectivityReceiver;
+import com.kenji1947.rssreader.domain.entities.Feed;
+import com.kenji1947.rssreader.domain.entities.SearchedFeed;
 import com.kenji1947.rssreader.domain.exceptions.FeedAlreadySubscribedException;
 import com.kenji1947.rssreader.domain.exceptions.NoNetworkException;
 import com.kenji1947.rssreader.domain.repository.FeedRepository;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import javax.inject.Inject;
 
@@ -18,12 +20,12 @@ import io.reactivex.Single;
 public class CreateNewFeedInteractor {
     private FeedRepository feedRepository;
     private ConnectivityReceiver connectivityReceiver;
-    private SchedulersProvider schedulersProvider;
+    private RxSchedulersProvider schedulersProvider;
 
     @Inject
     public CreateNewFeedInteractor(FeedRepository feedRepository,
                                    ConnectivityReceiver connectivityReceiver,
-                                   SchedulersProvider schedulersProvider) {
+                                   RxSchedulersProvider schedulersProvider) {
         this.feedRepository = feedRepository;
         this.connectivityReceiver = connectivityReceiver;
         this.schedulersProvider = schedulersProvider;
@@ -39,4 +41,50 @@ public class CreateNewFeedInteractor {
                         ? Completable.error(new FeedAlreadySubscribedException())
                         : feedRepository.createNewFeed(feedUrl));
     }
+
+    public Completable createNewFeed2 (Feed feed) {
+        return connectivityReceiver.isConnected()
+                .flatMap(aBoolean -> aBoolean
+                        ? feedRepository.feedExists(feed.url)
+                        : Single.error(new NoNetworkException()))
+                .flatMap(aBoolean -> aBoolean
+                        ? Single.error(new FeedAlreadySubscribedException())
+                        : feedRepository.fetchArticles(feed.url))
+                .flatMapCompletable(articles -> {
+                    feed.articles = articles;
+                    return feedRepository.saveFeed(feed);
+                });
+    }
+
+    public Completable createNewFeed2 (SearchedFeed searchedFeed) {
+        return connectivityReceiver.isConnected()
+                .flatMap(aBoolean -> aBoolean
+                        ? feedRepository.feedExists(searchedFeed.url)
+                        : Single.error(new NoNetworkException()))
+                .flatMap(aBoolean -> aBoolean
+                        ? Single.error(new FeedAlreadySubscribedException())
+                        : feedRepository.fetchArticles(searchedFeed.url))
+                .flatMapCompletable(articles -> {
+                    Feed feed = new Feed(searchedFeed.title, searchedFeed.imageUrl,
+                            searchedFeed.pageLink, searchedFeed.description, searchedFeed.url);
+                    feed.articles = articles;
+                    return feedRepository.saveFeed(feed);
+                });
+    }
+
+    public Completable createNewFeed2 (String feedUrl) {
+        return connectivityReceiver.isConnected()
+                .flatMap(aBoolean -> aBoolean
+                        ? feedRepository.feedExists(feedUrl)
+                        : Single.error(new NoNetworkException()))
+                .flatMap(aBoolean -> aBoolean
+                        ? Single.error(new FeedAlreadySubscribedException())
+                        : feedRepository.fetchArticles(feedUrl))
+                //get feed
+                .flatMapCompletable(articles -> {
+                    return Completable.complete();
+                });
+    }
+
+
 }

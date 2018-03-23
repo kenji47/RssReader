@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v4.app.NotificationManagerCompat;
 
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.alarm_manager.FeedUpdateSchedulerAlarmManager;
-import com.kenji1947.rssreader.data.worker.feed_update_scheduler.alarm_manager.FeedUpdateSimpleService;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.alarm_manager.FeedUpdateSchedulerAlarmManager;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.alarm_manager.FeedUpdateSimpleService;
 import com.kenji1947.rssreader.data.worker.notifications.NotificationFactory;
 import com.kenji1947.rssreader.data.worker.notifications.NotificationFactoryImpl;
 import com.kenji1947.rssreader.data.worker.notifications.NotificationManager;

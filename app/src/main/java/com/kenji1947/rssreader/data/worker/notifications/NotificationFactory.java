@@ -8,7 +8,9 @@ import android.app.PendingIntent;
  */
 
 public interface NotificationFactory {
+    //TODO Разные сервисы используют разные методы
     Notification createNewArticlesNotification(PendingIntent contentIntent);
-    Notification createNewArticlesNotificationNew(String title, String content, PendingIntent contentIntent
-    );
+    Notification createNewArticlesNotificationNew(String title, String content, PendingIntent contentIntent);
+
+    Notification createFeedSyncNotification(String title, String content, PendingIntent contentIntent);
 }

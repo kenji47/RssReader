@@ -2,7 +2,7 @@ package com.kenji1947.rssreader.domain.interactors.article;
 
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.repository.ArticleRepository;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import java.util.List;
 
@@ -17,10 +17,10 @@ import io.reactivex.Single;
 
 public class ArticleFavouriteInteractor {
     private ArticleRepository articleRepository;
-    private SchedulersProvider schedulersProvider;
+    private RxSchedulersProvider schedulersProvider;
 
     @Inject
-    public ArticleFavouriteInteractor(ArticleRepository articleRepository, SchedulersProvider schedulersProvider) {
+    public ArticleFavouriteInteractor(ArticleRepository articleRepository, RxSchedulersProvider schedulersProvider) {
         this.articleRepository = articleRepository;
         this.schedulersProvider = schedulersProvider;
     }

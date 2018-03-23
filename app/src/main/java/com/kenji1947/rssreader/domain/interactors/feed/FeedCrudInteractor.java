@@ -1,9 +1,8 @@
 package com.kenji1947.rssreader.domain.interactors.feed;
 
-import com.kenji1947.rssreader.data.worker.preference.PreferenceManager;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.domain.repository.FeedRepository;
-import com.kenji1947.rssreader.domain.util.SchedulersProvider;
+import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import java.util.List;
 
@@ -19,10 +18,10 @@ import io.reactivex.Single;
 
 public class FeedCrudInteractor {
     private FeedRepository feedRepository;
-    private SchedulersProvider schedulersProvider;
+    private RxSchedulersProvider schedulersProvider;
 
     @Inject
-    public FeedCrudInteractor(FeedRepository feedRepository, SchedulersProvider schedulersProvider) {
+    public FeedCrudInteractor(FeedRepository feedRepository, RxSchedulersProvider schedulersProvider) {
         this.feedRepository = feedRepository;
         this.schedulersProvider = schedulersProvider;
     }
@@ -40,4 +39,8 @@ public class FeedCrudInteractor {
     public Completable deleteFeed(long feedId) {
         return feedRepository.deleteFeed(feedId);
     };
+
+    public Single<Feed> getFeed(long feedId) {
+        return feedRepository.getFeed(feedId);
+    }
 }
