@@ -4,6 +4,7 @@ import com.kenji1947.rssreader.data.worker.resource_manager.ResourceManager;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.domain.interactors.article.ObserveArticlesModificationInteractor;
 import com.kenji1947.rssreader.domain.interactors.feed.FeedCrudInteractor;
+import com.kenji1947.rssreader.domain.interactors.feed.FeedSyncInteractor;
 import com.kenji1947.rssreader.domain.interactors.feed.FeedUpdateInteractor;
 import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
@@ -25,6 +26,7 @@ public class FeedSyncServicePresenter {
     private FeedCrudInteractor feedCrudInteractor;
     private FeedUpdateInteractor updateAllFeedsInteractor;
     private ObserveArticlesModificationInteractor observeArticleUpdatesInteractor;
+    private FeedSyncInteractor feedSyncInteractor;
     private ResourceManager resourceManager;
 
     @Inject
@@ -33,13 +35,15 @@ public class FeedSyncServicePresenter {
             FeedUpdateInteractor updateAllFeedsInteractor,
             ObserveArticlesModificationInteractor observeArticleUpdatesInteractor,
             ResourceManager resourceManager,
-            RxSchedulersProvider schedulersProvider) {
+            RxSchedulersProvider schedulersProvider,
+            FeedSyncInteractor feedSyncInteractor) {
         this.feedCrudInteractor = feedCrudInteractor;
 
         this.updateAllFeedsInteractor = updateAllFeedsInteractor;
         this.observeArticleUpdatesInteractor = observeArticleUpdatesInteractor;
         this.resourceManager = resourceManager;
         this.schedulersProvider = schedulersProvider;
+        this.feedSyncInteractor = feedSyncInteractor;
     }
 
     private int feedProgress;
@@ -64,11 +68,13 @@ public class FeedSyncServicePresenter {
     }
     private void onUpdateAllFeedsSuccess(List<Feed> feeds) {
         feedsTotal = feeds.size();
-        serviceView.showFeedUpdatingProgressNotification(feedsTotal, feedProgress);
-        update(feeds);
-        //start notification: feeds size
 
+        //Initial notification
+        serviceView.showFeedSyncNotificationProgress(feedsTotal, 0);
+        update(feeds);
     }
+
+    //TODO Remove notification or show error notification
     private void onError(Throwable throwable) {
         Timber.e(throwable);
         if (serviceView != null) {
@@ -88,15 +94,15 @@ public class FeedSyncServicePresenter {
     private void onUpdateNext(int newArticlesCount) {
         newArticlesSum += newArticlesCount;
         feedProgress++;
-        serviceView.showFeedUpdatingProgressNotification(feedsTotal, feedProgress);
-        //update notification: feedProgress
+        serviceView.showFeedSyncNotificationProgress(feedsTotal, feedProgress);
     }
 
 
     private void onUpdateComplete() {
         if (serviceView != null) {
             //observeArticleUpdatesInteractor.notifyArticleModified();
-            serviceView.showFeedUpdatingDoneNotification(newArticlesSum);
+            feedSyncInteractor.notifyFeedSyncComplete(newArticlesSum);
+            serviceView.showFeedSyncNotificationComplete(newArticlesSum);
             serviceView.finishJob();
         }
     }

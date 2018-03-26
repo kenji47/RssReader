@@ -12,6 +12,7 @@ import dagger.Component;
 @Component(dependencies = AppComponent.class)
 public interface SettingsPresenterComponent {
     SettingsPresenter provideSettingsPresenter();
+
     final class Initializer {
 
         public static SettingsPresenterComponent init(AppComponent appComponent) {

@@ -8,10 +8,10 @@ import android.support.annotation.Nullable;
 
 import com.kenji1947.rssreader.App;
 import com.kenji1947.rssreader.R;
-import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_sceduler_presenter.FeedUpdateServicePresenter;
-import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_sceduler_presenter.FeedUpdateServiceView;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.FeedUpdateServicePresenter;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_scheduler.FeedUpdateServiceView;
 import com.kenji1947.rssreader.data.worker.notifications.NotificationFactory;
-import com.kenji1947.rssreader.data.worker.notifications.NotificationManager;
+import com.kenji1947.rssreader.data.worker.notifications.NotificationManagerWrapper;
 import com.kenji1947.rssreader.di.presenter.FeedUpdateServicePresenter3Component;
 
 import javax.inject.Inject;
@@ -24,14 +24,18 @@ import timber.log.Timber;
  */
 
 public class FeedUpdateSimpleService extends Service implements FeedUpdateServiceView{
-    private static final int NEW_ARTICLES_NOTIFICATION_ID = 194747;
+    //private static final int NEW_ARTICLES_NOTIFICATION_ID = 194747;
+
+    @Inject
+    @Named("FEED_SYNC_NOTIFICATION_ID")
+    int feedSyncNotificationId = 194747;
 
     @Inject
     @Named("FeedUpdateNotificationPendingIntent")
     PendingIntent notificationPendingIntent;
 
     @Inject
-    NotificationManager notificationManager;
+    NotificationManagerWrapper notificationManager;
     @Inject
     NotificationFactory notificationFactory;
 
@@ -49,6 +53,7 @@ public class FeedUpdateSimpleService extends Service implements FeedUpdateServic
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Timber.d("onStartCommand");
         presenter.updateAllFeeds();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -70,7 +75,7 @@ public class FeedUpdateSimpleService extends Service implements FeedUpdateServic
     public void showNewArticlesNotification(int newArticlesCount, int unreadArticles) {
         Timber.d("showNewArticlesNotification newArticlesCount:" + newArticlesCount
                 + " unreadArticles:" + unreadArticles);
-        notificationManager.showNotification(NEW_ARTICLES_NOTIFICATION_ID,
+        notificationManager.showNotification(feedSyncNotificationId,
                 notificationFactory.createNewArticlesNotificationNew(
                         getContentTitle(newArticlesCount, unreadArticles),
                         getContentText(newArticlesCount, unreadArticles),

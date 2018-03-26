@@ -5,6 +5,7 @@ import com.kenji1947.rssreader.data.database.CommonUtils;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.domain.exceptions.NoNetworkException;
+import com.kenji1947.rssreader.domain.repository.ArticleRepository;
 import com.kenji1947.rssreader.domain.repository.FeedRepository;
 import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
@@ -26,27 +27,85 @@ import timber.log.Timber;
 public class FeedUpdateInteractor {
     private FeedRepository feedRepository;
     private ConnectivityReceiver connectivityReceiver;
+    private ArticleRepository articleRepository;
     private RxSchedulersProvider schedulersProvider;
 
     @Inject
     public FeedUpdateInteractor(FeedRepository feedRepository,
                                 ConnectivityReceiver connectivityReceiver,
+                                ArticleRepository articleRepository,
                                 RxSchedulersProvider schedulersProvider) {
         this.feedRepository = feedRepository;
         this.connectivityReceiver = connectivityReceiver;
+        this.articleRepository = articleRepository;
         this.schedulersProvider = schedulersProvider;
     }
 
 
-    public Single<Feed> updateFeed(long id) {
+    //TODO Rename to Progress
+    public Observable<Integer> updateAllFeedsAndGetNewArticlesCountObservable() {
+        Timber.d("updateAllFeedsAndGetNewArticlesCountObservable");
         return connectivityReceiver.isConnected()
                 .flatMap(aBoolean -> aBoolean
-                        ? feedRepository.getFeed(id)
+                        ? feedRepository.getFeeds()
+                        : Single.error(new NoNetworkException()))
+                .toObservable()
+                .flatMap(Observable::fromIterable)
+//                .flatMap(feed -> {
+//                    TimeUnit.SECONDS.sleep(3);
+//                    return Observable.just(feed.articles.size());
+//                });
+                .flatMap(feed -> fetchOnlyNewArticlesForFeed(feed).toObservable())
+                .flatMap(feed -> feedRepository
+                        .saveArticlesForFeed(feed.id, feed.articles)
+                        .toSingleDefault(feed.articles.size())
+                        .toObservable());
+    }
+
+
+    public Single<Integer> updateFeedAndGetNewArticlesCount(long feedId) {
+        return connectivityReceiver.isConnected()
+                .flatMap(aBoolean -> aBoolean
+                        ? feedRepository.getFeed(feedId)
                         : Single.error(new NoNetworkException()))
                 .flatMap(feed -> fetchOnlyNewArticlesForFeed(feed))
-                .flatMap(feed -> feedRepository.saveArticlesForFeed(feed.id, feed.articles).toSingleDefault(feed))
-                .flatMap(feed -> feedRepository.getFeed(id));
+                .flatMap(feed -> feedRepository.saveArticlesForFeed(feedId, feed.articles)
+                        .toSingleDefault(feed.articles.size()));
     }
+
+    Single<Feed> fetchOnlyNewArticlesForFeed(Feed feedFromDb) {
+        return articleRepository.updateArticles(feedFromDb.url)
+                .map(articlesFromRemote -> {
+                    List<Article> articlesNew = new ArrayList<>();
+                    for (Article article : articlesFromRemote) {
+                        if (!isArticleContains(feedFromDb.articles, article)) {
+                            articlesNew.add(article);
+                        }
+                    }
+                    feedFromDb.articles = articlesNew; //TODO !!!
+                    Timber.d("fetchOnlyNewArticlesForFeed " + feedFromDb.id + " " + articlesNew.size());
+                    return feedFromDb;
+                });
+    }
+
+    private boolean isArticleContains(List<Article> fromDb, Article articleFromRemote) {
+        for (Article article : fromDb) {
+            if (article.link.equals(articleFromRemote.link))
+                return true;
+        }
+        return false;
+    }
+
+
+//    public Single<Feed> updateFeed(long id) {
+//        return connectivityReceiver.isConnected()
+//                .flatMap(aBoolean -> aBoolean
+//                        ? feedRepository.getFeed(id)
+//                        : Single.error(new NoNetworkException()))
+//                .flatMap(feed -> fetchOnlyNewArticlesForFeed(feed))
+//                .flatMap(feed -> feedRepository.saveArticlesForFeed(feed.id, feed.articles).toSingleDefault(feed))
+//                .flatMap(feed -> feedRepository.getFeed(id));
+//    }
 
 
     public Single<List<Feed>> updateAllFeeds() {
@@ -105,62 +164,6 @@ public class FeedUpdateInteractor {
                     return updatedArticlesSummary;
                 });
     }
-
-    public Observable<Integer> updateAllFeedsAndGetNewArticlesCountObservable() {
-        Timber.d("updateAllFeedsAndGetNewArticlesCountObservable");
-        return connectivityReceiver.isConnected()
-                .flatMap(aBoolean -> aBoolean
-                        ? feedRepository.getFeeds()
-                        : Single.error(new NoNetworkException()))
-                .toObservable()
-                .flatMap(Observable::fromIterable)
-                .flatMap(feed -> {
-                    TimeUnit.SECONDS.sleep(2);
-                    return Observable.just(feed.articles.size());
-                });
-//                .flatMap(feed -> fetchOnlyNewArticlesForFeed(feed).toObservable())
-//                .flatMap(feed -> feedRepository
-//                        .saveArticlesForFeed(feed.id, feed.articles)
-//                        .toSingleDefault(feed.articles.size())
-//                        .toObservable());
-    }
-
-
-    Single<Feed> fetchOnlyNewArticlesForFeed(Feed feedFromDb) {
-        return feedRepository.fetchFeed(feedFromDb.url) //TODO убрать /feed
-                .map(feedFromRemote -> {
-
-//                    Set<Article> articleSet = new HashSet<>();
-//
-//                    Map<String, Article> articleMap = new HashMap<>();
-//                    List<Article> all = new ArrayList<>();
-//                    all.addAll(feedFromDb.articles);
-//                    all.addAll(feedFromRemote.articles);
-//
-//                    for (Article article : all) {
-//                        if (!articleMap.containsKey(article.link))
-//                            articleMap.put(article.link, article);
-//                    }
-
-                    List<Article> articlesNew = new ArrayList<>();
-                    for (Article article : feedFromRemote.articles) {
-                        if (!isArticleContains(feedFromDb.articles, article)) {
-                            articlesNew.add(article);
-                        }
-                    }
-                    feedFromDb.articles = articlesNew; //TODO !!!
-                    return feedFromDb;
-                });
-    }
-
-    private boolean isArticleContains(List<Article> fromDb, Article articleFromRemote) {
-        for (Article article : fromDb) {
-            if (article.link.equals(articleFromRemote.link))
-                return true;
-        }
-        return false;
-    }
-
 
     //TODO Zip example
     private Single<Integer> pullNewArticlesForFeed(Feed feed) {

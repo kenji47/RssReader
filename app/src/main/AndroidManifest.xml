@@ -21,7 +21,8 @@
 
 
         <activity android:name=".presentation.MainActivity"
-            android:windowSoftInputMode="stateUnchanged|adjustPan">
+            android:windowSoftInputMode="stateUnchanged|adjustPan"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -31,11 +32,8 @@
         <activity android:name=".presentation.base.DummyActivity"
             android:theme="@style/AppTheme.Transparent"
             android:screenOrientation="portrait"/>
-
-        <service android:name=".data.worker.feed_sync_scheduler.job_scheduler.FeedUpdateService"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
-        <service android:name=".data.worker.feed_sync_scheduler.job_sceduler_presenter.FeedUpdateService2"
+        
+        <service android:name=".data.worker.feed_sync_scheduler.job_scheduler.FeedUpdateService2"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
         <service android:name=".data.worker.feed_sync_scheduler.alarm_manager.FeedUpdateSimpleService"/>

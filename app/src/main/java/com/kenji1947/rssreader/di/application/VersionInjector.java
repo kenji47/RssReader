@@ -5,7 +5,7 @@ package com.kenji1947.rssreader.di.application;
  */
 
 public class VersionInjector {
-//    FeedUpdateScheduler provideFeedUpdateScheduler(Context context,
+//    FeedSyncScheduler provideFeedUpdateScheduler(Context context,
 //                                                   PreferenceManager preferenceManager,
 //                                                   PendingIntent servicePendingIntent) {
 
@@ -18,7 +18,7 @@ public class VersionInjector {
 //        }
 //    }
 //
-//    FeedUpdateScheduler buildJobScheduler() {
+//    FeedSyncScheduler buildJobScheduler() {
 //        new FeedUpdateSchedulerJob(feedsUpdateJobService, preferenceManager, jobSchedulerWrapper, jobInfo);
 //    }
 }

@@ -6,7 +6,7 @@ import com.kenji1947.rssreader.data.worker.error_handler.ErrorHandler;
 import com.kenji1947.rssreader.data.worker.resource_manager.ResourceManager;
 import com.kenji1947.rssreader.domain.exceptions.FeedAlreadySubscribedException;
 import com.kenji1947.rssreader.domain.exceptions.NoNetworkException;
-import com.kenji1947.rssreader.domain.interactors.feed.CreateNewFeedInteractor;
+import com.kenji1947.rssreader.domain.interactors.feed.SubscribeToFeedInteractor;
 import com.kenji1947.rssreader.presentation.Screens;
 import com.kenji1947.rssreader.presentation.new_feed.FeedNewPresenter;
 import com.kenji1947.rssreader.presentation.new_feed.FeedNewView$$State;
@@ -40,7 +40,7 @@ public class FeedNewPresenterTest {
     Router router;
 
     @Mock
-    CreateNewFeedInteractor createFeedInteractor;
+    SubscribeToFeedInteractor createFeedInteractor;
 
     @Mock
     FeedNewView$$State viewState;

@@ -9,7 +9,7 @@ import android.support.annotation.Nullable;
 import com.kenji1947.rssreader.App;
 import com.kenji1947.rssreader.R;
 import com.kenji1947.rssreader.data.worker.notifications.NotificationFactory;
-import com.kenji1947.rssreader.data.worker.notifications.NotificationManager;
+import com.kenji1947.rssreader.data.worker.notifications.NotificationManagerWrapper;
 import com.kenji1947.rssreader.di.presenter.FeedSyncServicePresenterComponent;
 
 import javax.inject.Inject;
@@ -22,11 +22,13 @@ import timber.log.Timber;
  */
 
 public class FeedSyncService extends Service implements FeedSyncServiceView {
-    //TODO Сделать общим
-    private static final int FEED_SYNC_NOTIFICATION_ID = 194747;
 
     @Inject
-    NotificationManager notificationManager;
+    @Named("FEED_SYNC_NOTIFICATION_ID")
+    int feedSyncNotificationId = 194747;
+
+    @Inject
+    NotificationManagerWrapper notificationManager;
     @Inject
     NotificationFactory notificationFactory;
     @Inject
@@ -74,35 +76,37 @@ public class FeedSyncService extends Service implements FeedSyncServiceView {
     //---
 
     @Override
-    public void showFeedUpdatingProgressNotification(int feedsTotal, int feedProgress) {
+    public void showFeedSyncNotificationProgress(int feedsTotal, int feedProgress) {
         notificationManager.showNotification(
-                FEED_SYNC_NOTIFICATION_ID,
-                notificationFactory.createFeedSyncNotification(
-                        getUpdateNotificationTitle(),
-                        getUpdateNotificationText(feedsTotal, feedProgress),
+                feedSyncNotificationId,
+                notificationFactory.createFeedSyncNotificationProgress(
+                        getFeedSyncNotificationProgressTitle(),
+                        getFeedSyncNotificationProgressText(feedsTotal, feedProgress),
+                        feedsTotal,
+                        feedProgress,
                         notificationPendingIntent));
     }
 
-    private String getUpdateNotificationTitle() {
+    private String getFeedSyncNotificationProgressTitle() {
         return getString(R.string.notification_feed_sync_update_title);
     }
-    private String getUpdateNotificationText(int feedsTotal, int feedProgress) {
+    private String getFeedSyncNotificationProgressText(int feedsTotal, int feedProgress) {
         return getString(R.string.notification_feed_sync_update_text, feedProgress, feedsTotal);
     }
 
     @Override
-    public void showFeedUpdatingDoneNotification(int newArticlesCount) {
-        notificationManager.showNotification(FEED_SYNC_NOTIFICATION_ID,
-                notificationFactory.createFeedSyncNotification(
-                        getDoneNotificationTitle(),
-                        getDoneNotificationText(newArticlesCount),
+    public void showFeedSyncNotificationComplete(int newArticlesCount) {
+        notificationManager.showNotification(feedSyncNotificationId,
+                notificationFactory.createFeedSyncNotificationComplete(
+                        getNotificationCompleteTitle(),
+                        getNotificationCompleteText(newArticlesCount),
                         notificationPendingIntent));
     }
 
-    private String getDoneNotificationTitle() {
+    private String getNotificationCompleteTitle() {
         return getString(R.string.notification_feed_sync_done_title);
     }
-    private String getDoneNotificationText(int newArticlesCount) {
+    private String getNotificationCompleteText(int newArticlesCount) {
         return getString(R.string.notification_feed_sync_done_text, newArticlesCount);
     }
 }

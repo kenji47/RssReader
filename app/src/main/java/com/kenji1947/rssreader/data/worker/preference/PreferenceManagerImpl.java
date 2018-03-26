@@ -10,7 +10,7 @@ import timber.log.Timber;
  */
 
 public class PreferenceManagerImpl implements PreferenceManager {
-    private long DEFAULT_FEED_UPDATE_SERVICE_PERIOD = 1_800_000; //30min
+    private long DEFAULT_FEED_UPDATE_SERVICE_PERIOD = 5000; //30min
     private static final String USER_PREFERENCES = "user_preferences";
     private static final String KEY_SHOULD_UPDATE_FEEDS_IN_BACKGROUND = "key_should_update_feed_in_background";
     private static final String KEY_FEED_UPDATE_SERVICE_PERIOD = "key_feed_update_service_period";
@@ -32,24 +32,24 @@ public class PreferenceManagerImpl implements PreferenceManager {
     }
 
     @Override
-    public boolean shouldUpdateFeedsInBackground() {
+    public boolean isFeedSyncSchedulerEnabled() {
         return preferences.getBoolean(KEY_SHOULD_UPDATE_FEEDS_IN_BACKGROUND, true);
     }
 
     @Override
-    public void setShouldUpdateFeedsInBackground(boolean shouldUpdate) {
+    public void setFeedSyncSchedulerStatus(boolean enable) {
         preferences.edit()
-                .putBoolean(KEY_SHOULD_UPDATE_FEEDS_IN_BACKGROUND, shouldUpdate)
+                .putBoolean(KEY_SHOULD_UPDATE_FEEDS_IN_BACKGROUND, enable)
                 .apply();
     }
 
     @Override
-    public long getFeedUpdateServicePeriod() {
+    public long getFeedSyncSchedulerInterval() {
         return preferences.getLong(KEY_FEED_UPDATE_SERVICE_PERIOD, DEFAULT_FEED_UPDATE_SERVICE_PERIOD);
     }
 
     @Override
-    public void setUpdateFeedsInBackgroundInterval(long intervalMillis) {
+    public void setFeedSyncSchedulerInterval(long intervalMillis) {
         preferences.edit()
                 .putLong(KEY_FEED_UPDATE_SERVICE_PERIOD, intervalMillis)
                 .apply();

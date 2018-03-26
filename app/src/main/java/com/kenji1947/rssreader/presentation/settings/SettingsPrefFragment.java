@@ -7,12 +7,11 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 
 import com.arellomobile.mvp.MvpDelegate;
-import com.arellomobile.mvp.MvpFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.kenji1947.rssreader.App;
 import com.kenji1947.rssreader.di.presenter.SettingsPresenterComponent;
-import com.kenji1947.rssreader.domain.repository.AppPreferences;
+import com.kenji1947.rssreader.domain.entities.AppSettings;
 
 /**
  * Created by chamber on 27.12.2017.
@@ -128,7 +127,7 @@ public class SettingsPrefFragment extends PreferenceFragment implements Settings
     }
 
     @Override
-    public void setPreferences(AppPreferences preferences) {
+    public void setAppSettings(AppSettings appSettings) {
 
     }
 }

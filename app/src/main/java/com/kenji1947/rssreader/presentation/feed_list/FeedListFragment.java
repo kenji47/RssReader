@@ -188,6 +188,7 @@ public class FeedListFragment extends MvpAppCompatFragment implements FeedListVi
         swipeRefreshLayout_refresh_feeds.setOnRefreshListener(() -> {
             //presenter.updateAllFeedsNewArticlesCount();
             presenter.syncFeeds();
+            swipeRefreshLayout_refresh_feeds.post(() -> swipeRefreshLayout_refresh_feeds.setRefreshing(false));
         });
     }
 
@@ -372,8 +373,10 @@ public class FeedListFragment extends MvpAppCompatFragment implements FeedListVi
 
     }
 
+    //TODO Вызывается множество раз во время синхро
     @Override
     public void showFeedObservableSubscriptions(ListDataDiffHolder<Feed> dataDiffHolder) {
+        Timber.d("showFeedObservableSubscriptions " + dataDiffHolder.getList().size());
         feeds = dataDiffHolder.getList();
         adapter.updateData(dataDiffHolder.getList());
         //adapter.notifyDataSetChanged();
@@ -399,7 +402,7 @@ public class FeedListFragment extends MvpAppCompatFragment implements FeedListVi
 
     @Override
     public void showProgress(boolean progress) {
-        swipeRefreshLayout_refresh_feeds.post(() -> swipeRefreshLayout_refresh_feeds.setRefreshing(progress));
+        //swipeRefreshLayout_refresh_feeds.post(() -> swipeRefreshLayout_refresh_feeds.setRefreshing(progress));
 //        if (progress)
 //            loadProgressBar.setVisibility(View.VISIBLE);
 //        else

@@ -17,6 +17,6 @@ public interface FetchFeedApiService {
     //Используется как для создания фида, так и для обновления статей
     Single<Feed> fetchFeed(String feedUrl) throws IOException;
 
-    //Uses for updating feed articles
+    //Uses for updating articles in ArticleList
     Single<List<Article>> fetchArticles(String feedUrl);
 }

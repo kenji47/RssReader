@@ -1,5 +1,6 @@
 package com.kenji1947.rssreader.domain.interactors.feed;
 
+import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.domain.repository.FeedRepository;
 import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
@@ -35,6 +36,10 @@ public class FeedCrudInteractor {
     public Completable createNewFeed(String feedUrl) {
         return feedRepository.createNewFeed(feedUrl);
     };
+
+    public Completable saveArticleForFeed(long feedId, List<Article> articles) {
+        return feedRepository.saveArticlesForFeed(feedId, articles);
+    }
 
     public Completable deleteFeed(long feedId) {
         return feedRepository.deleteFeed(feedId);

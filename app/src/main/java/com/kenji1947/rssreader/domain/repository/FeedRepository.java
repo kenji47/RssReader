@@ -1,5 +1,6 @@
 package com.kenji1947.rssreader.domain.repository;
 
+import com.kenji1947.rssreader.domain.entities.AppSettings;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.domain.entities.SearchedFeed;
@@ -39,14 +40,18 @@ public interface FeedRepository {
     Single<Feed> fetchFeed(String feedUrl);
     Completable createNewFeed(String feedUrl);
 
-    Single<Boolean> shouldUpdateFeedsInBackground();
-    Completable setShouldUpdateFeedsInBackground(boolean shouldUpdate);
+    Single<Boolean> isFeedSyncSchedulerEnabled();
+    Completable setFeedSyncSchedulerStatus(boolean shouldUpdate);
 
-    Completable setUpdateFeedsInBackgroundInterval(long intervalMillis);
+    Completable setFeedSyncSchedulerInterval(long intervalMillis);
 
-    Single<Long> getUpdateFeedsInBackgroundInterval();
+    Single<Long> getFeedSyncSchedulerInterval();
 
-    Observable<Boolean> observeShouldUpdateFeedsInBackground();
+    Observable<Boolean> observeIsFeedSyncSchedulerEnabled();
 
-    Single<AppPreferences> getPreferencesData();
+    Observable<Integer> observeFeedSyncComplete();
+
+    void notifyFeedSyncComplete(int newArticlesCount);
+
+    Single<AppSettings> getAppSettings();
 }

@@ -2,6 +2,7 @@ package com.kenji1947.rssreader.presentation.article_list;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import com.kenji1947.rssreader.di.presenter.ArticleListPresenterComponent;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.presentation.article_detail.ArticleDetailFragment;
+import com.kenji1947.rssreader.presentation.common.ThemedSnackbar;
 
 import java.util.List;
 
@@ -56,6 +58,7 @@ public class ArticleListFragment extends MvpAppCompatFragment implements Article
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.swipeRefreshLayout_refresh_articles) SwipeRefreshLayout swipeRefreshLayout_refresh_articles;
     @BindView(R.id.recyclerView_articles) RecyclerView recyclerView_articles;
+    @BindView(R.id.coordinator_top) CoordinatorLayout coordinator_top;
 
     private Unbinder unbinder;
     private boolean isFavMode;
@@ -149,13 +152,14 @@ public class ArticleListFragment extends MvpAppCompatFragment implements Article
         recyclerView_articles.setAdapter(adapter);
 
         recyclerView_articles.setLayoutManager(new LinearLayoutManager(getActivity()));
+        //TODO Disable refresh isFavMode
         swipeRefreshLayout_refresh_articles.setOnRefreshListener(() -> {
             if (isFavMode)
                 presenter.getFavArticles();
             else
-                presenter.getArticlesForFeed(getIdFromArguments());
+                presenter.updateArticles();
+                //presenter.getArticlesForFeed(getIdFromArguments());
         });
-
     }
 
     private void onItemClick(int pos) {
@@ -199,5 +203,22 @@ public class ArticleListFragment extends MvpAppCompatFragment implements Article
     public void showArticles(List<Article> articles) {
         this.articles = articles;
         adapter.updateArticles(articles);
+    }
+
+    @Override
+    public void showMessage(String message) {
+
+    }
+
+    @Override
+    public void showNewArticlesCountMessage(Integer count) {
+        ThemedSnackbar
+                .makeNewArticlesSnackbar(coordinator_top, getString(R.string.snackbar_text_updated_articles, count))
+                .show();
+    }
+
+    @Override
+    public void showErrorMessage(String message) {
+
     }
 }

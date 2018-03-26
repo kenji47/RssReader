@@ -5,7 +5,7 @@ import com.arellomobile.mvp.MvpPresenter;
 import com.kenji1947.rssreader.data.worker.error_handler.ErrorHandler;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.domain.entities.SearchedFeed;
-import com.kenji1947.rssreader.domain.interactors.feed.CreateNewFeedInteractor;
+import com.kenji1947.rssreader.domain.interactors.feed.SubscribeToFeedInteractor;
 import com.kenji1947.rssreader.domain.interactors.feed.FeedCrudInteractor;
 import com.kenji1947.rssreader.domain.interactors.feed.SearchFeedsInteractor;
 import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
@@ -30,7 +30,7 @@ public class FeedNewPresenter extends MvpPresenter<FeedNewView> {
     private SearchFeedsInteractor searchFeedsInteractor;
     private FeedCrudInteractor feedCrudInteractor;
     private RxSchedulersProvider schedulersProvider;
-    private CreateNewFeedInteractor createFeedInteractor;
+    private SubscribeToFeedInteractor createFeedInteractor;
     private ErrorHandler errorHandler;
     private Router router;
 
@@ -40,7 +40,7 @@ public class FeedNewPresenter extends MvpPresenter<FeedNewView> {
     private List<Feed> subscribedFeeds;
 
     @Inject
-    public FeedNewPresenter(CreateNewFeedInteractor createFeedInteractor,
+    public FeedNewPresenter(SubscribeToFeedInteractor createFeedInteractor,
                             SearchFeedsInteractor searchFeedsInteractor,
                             FeedCrudInteractor feedCrudInteractor,
                             RxSchedulersProvider schedulersProvider,
@@ -111,20 +111,24 @@ public class FeedNewPresenter extends MvpPresenter<FeedNewView> {
         if (searchedFeeds.get(pos).isSubscribed)
             getViewState().showMessage("You already subscribed to this feed");
         else {
-            compositeDisposable.add(createFeedInteractor.createNewFeed2(searchedFeeds.get(pos))
+            //compositeDisposable.add(createFeedInteractor.createNewFeed2(searchedFeeds.get(pos))
+            compositeDisposable.add(createFeedInteractor.subscribeToFeed(searchedFeeds.get(pos).url)
                     .observeOn(schedulersProvider.getMain())
-                    .doOnSubscribe(disposable -> getViewState().showSubscribeFeedLoadingDialog(searchedFeeds.get(pos).title))
+                    .doOnSubscribe(disposable -> getViewState()
+                            .showSubscribeFeedLoadingDialog(searchedFeeds.get(pos).title))
                     .doAfterTerminate(() -> getViewState().hideLoadingDialog())
                     .subscribe(() -> {
                                 Timber.d("subscribeToFeed complete");
-                                router.exitWithResult(Screens.RESULT_NEW_FEED_SCREEN_UPDATE, searchedFeeds.get(pos).title);
+                                router.exitWithResult(Screens.RESULT_NEW_FEED_SCREEN_UPDATE,
+                                        searchedFeeds.get(pos).title);
                                 //return to feed list
                                 //show added toast
                             },
                             throwable -> {
                                 Timber.e("subscribeToFeed error " + throwable);
                                 throwable.printStackTrace();
-                                errorHandler.handleErrorScreenNewFeed(throwable, s -> getViewState().showErrorMessage(s));
+                                errorHandler.handleErrorScreenNewFeed(throwable,
+                                        s -> getViewState().showErrorMessage(s));
                             }));
         }
     }

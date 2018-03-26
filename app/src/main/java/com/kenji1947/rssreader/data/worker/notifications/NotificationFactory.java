@@ -9,8 +9,9 @@ import android.app.PendingIntent;
 
 public interface NotificationFactory {
     //TODO Разные сервисы используют разные методы
-    Notification createNewArticlesNotification(PendingIntent contentIntent);
     Notification createNewArticlesNotificationNew(String title, String content, PendingIntent contentIntent);
 
-    Notification createFeedSyncNotification(String title, String content, PendingIntent contentIntent);
+    Notification createFeedSyncNotificationComplete(String title, String content, PendingIntent contentIntent);
+
+    Notification createFeedSyncNotificationProgress(String title, String content, int total, int progress, PendingIntent contentIntent);
 }

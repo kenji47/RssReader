@@ -1,5 +1,6 @@
 package com.kenji1947.rssreader.data.repository;
 
+import com.kenji1947.rssreader.data.api.fetch_feed.FetchFeedApiService;
 import com.kenji1947.rssreader.data.database.ArticleDao;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.repository.ArticleRepository;
@@ -24,23 +25,31 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 
     private ArticleDao articleDao;
     private RxSchedulersProvider schedulersProvider;
-    private Subject<Boolean> articleServiceUpdate = PublishSubject.create();
+    private FetchFeedApiService feedService;
+    private Subject<Boolean> articleServiceUpdateSubject = PublishSubject.create();
 
-
-    public ArticleRepositoryImpl(ArticleDao articleDao, RxSchedulersProvider schedulersProvider) {
+    public ArticleRepositoryImpl(ArticleDao articleDao,
+                                 RxSchedulersProvider schedulersProvider,
+                                 FetchFeedApiService feedService) {
         this.articleDao = articleDao;
         this.schedulersProvider = schedulersProvider;
+        this.feedService = feedService;
+    }
+
+    @Override
+    public Single<List<Article>> updateArticles(String feedUrl) {
+        return feedService.fetchArticles(feedUrl).subscribeOn(schedulersProvider.getIo());
     }
 
     //TODO Move to Feed Intercator
     @Override
     public void notifyArticleModified() {
-        articleServiceUpdate.onNext(true);
+        articleServiceUpdateSubject.onNext(true);
     }
 
     @Override
     public Observable<Boolean> observeArticlesModification() {
-        return articleServiceUpdate
+        return articleServiceUpdateSubject
                 .throttleFirst(CLICK_THROTTLE_WINDOW_MILLIS, TimeUnit.MILLISECONDS)
                 .subscribeOn(schedulersProvider.getIo());
     }

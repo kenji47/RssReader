@@ -83,8 +83,8 @@ public class FeedBackgroundUpdatesTest {
 
         //Disable background updates in preference. Set update interval to 2 seconds
         PreferenceManager preferenceManager = App.INSTANCE.getAppComponent().providePreferenceManager();
-        preferenceManager.setShouldUpdateFeedsInBackground(false);
-        preferenceManager.setUpdateFeedsInBackgroundInterval(2000);
+        preferenceManager.setFeedSyncSchedulerStatus(false);
+        preferenceManager.setFeedSyncSchedulerInterval(2000);
 
         Feed feed = DataLab.generateFeed(DataLab.URL_XXX);
         databaseOperations.addFeed(feed);
@@ -128,8 +128,8 @@ public class FeedBackgroundUpdatesTest {
 
         //Disable background updates in preference. Set update interval to 2 seconds
         PreferenceManager preferenceManager = App.INSTANCE.getAppComponent().providePreferenceManager();
-        preferenceManager.setShouldUpdateFeedsInBackground(false);
-        preferenceManager.setUpdateFeedsInBackgroundInterval(2000);
+        preferenceManager.setFeedSyncSchedulerStatus(false);
+        preferenceManager.setFeedSyncSchedulerInterval(2000);
 
         Feed feed = DataLab.generateFeed(DataLab.URL_XXX);
         databaseOperations.addFeed(feed);

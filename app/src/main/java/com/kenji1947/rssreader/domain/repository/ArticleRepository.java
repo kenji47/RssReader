@@ -14,6 +14,8 @@ import io.reactivex.Single;
  */
 
 public interface ArticleRepository {
+    Single<List<Article>> updateArticles(String feedUrl);
+
     void notifyArticleModified();
 
     Observable<Boolean> observeArticlesModification();

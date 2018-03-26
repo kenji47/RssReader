@@ -9,7 +9,9 @@ import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.domain.interactors.article.ObserveArticlesModificationInteractor;
 import com.kenji1947.rssreader.domain.interactors.feed.FeedSyncInteractor;
 import com.kenji1947.rssreader.domain.interactors.feed.FeedCrudInteractor;
+import com.kenji1947.rssreader.domain.interactors.feed.FeedSyncSchedulerInteractor;
 import com.kenji1947.rssreader.domain.interactors.feed.FeedUpdateInteractor;
+import com.kenji1947.rssreader.domain.interactors.settings.AppSettingsInteractor;
 import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 import com.kenji1947.rssreader.presentation.Screens;
 import com.kenji1947.rssreader.presentation.article_list.ArticleListArgumentHolder;
@@ -35,6 +37,8 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
     private FeedUpdateInteractor updateAllFeedsInteractor;
     private ObserveArticlesModificationInteractor observeArticlesModificationInteractor;
     private FeedSyncInteractor feedSyncInteractor;
+    private FeedSyncSchedulerInteractor feedSyncSchedulerInteractor;
+    private AppSettingsInteractor appSettingsInteractor;
     private RxSchedulersProvider schedulersProvider;
     private ErrorHandler errorHandler;
     private Router router;
@@ -49,6 +53,8 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
                              FeedUpdateInteractor updateAllFeedsInteractor,
                              ObserveArticlesModificationInteractor observeArticlesModificationInteractor,
                              FeedSyncInteractor feedSyncInteractor,
+                             FeedSyncSchedulerInteractor feedSyncSchedulerInteractor,
+                             AppSettingsInteractor appSettingsInteractor,
                              RxSchedulersProvider schedulersProvider,
                              ErrorHandler errorHandler,
                              Router router) {
@@ -56,6 +62,8 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
         this.observeArticlesModificationInteractor = observeArticlesModificationInteractor;
         this.feedSyncInteractor = feedSyncInteractor;
         this.updateAllFeedsInteractor = updateAllFeedsInteractor;
+        this.feedSyncSchedulerInteractor = feedSyncSchedulerInteractor;
+        this.appSettingsInteractor = appSettingsInteractor;
         this.schedulersProvider = schedulersProvider;
         this.errorHandler = errorHandler;
         this.router = router;
@@ -75,12 +83,22 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
         Timber.d("onFirstViewAttach");
 
         //getBackgroundFeedUpdatesStatus();
-        //observeShouldUpdateFeedsInBackground();
+        observeShouldUpdateFeedsInBackground();
         //getAllFeeds();
 
         observeArticlesModification();
+        observeFeedSyncComplete();
         getAllFeedsObserve();
         //updateAllFeeds(); //TODO Повесить на рефреш?
+    }
+
+    private void observeFeedSyncComplete() {
+        feedSyncInteractor.observeFeedSyncComplete()
+                .observeOn(schedulersProvider.getMain())
+                .subscribe(integer -> {
+                    Timber.d("observeFeedSyncComplete " + integer);
+                    getViewState().showNewArticlesCountMessage(integer);
+                });
     }
 
     //TODO Проверить как ОБ уведомляет при изменении дочерних сущностей
@@ -115,7 +133,7 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
     public void updateAllFeedsNewArticlesCount() {
         compositeDisposable.add(updateAllFeedsInteractor.updateAllFeedsAndGetNewArticlesCount()
                 .observeOn(schedulersProvider.getMain())
-                .doOnSubscribe(disposable -> getViewState().showProgress(true))
+                //.doOnSubscribe(disposable -> getViewState().showProgress(true))
                 //.doAfterTerminate(() -> getViewState().showProgress(false)) //TODO doFinally
                 .subscribe(this::updateAllFeedsNewArticlesCount, this::updateAllFeedsNewArticlesCount)
         );
@@ -136,7 +154,7 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
     public void updateAllFeeds() {
         compositeDisposable.add(updateAllFeedsInteractor.updateAllFeeds2()
                 .observeOn(schedulersProvider.getMain())
-                .doOnSubscribe(disposable -> getViewState().showProgress(true))
+                //.doOnSubscribe(disposable -> getViewState().showProgress(true))
                 //.doAfterTerminate(() -> getViewState().showProgress(false)) //TODO doFinally
                 .subscribe(this::onUpdateAllFeedsSuccess, this::onUpdateAllFeedsError)
                 );
@@ -266,7 +284,7 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
     //background service
 //    private void getBackgroundFeedUpdatesStatus() {
 //        Timber.d("getBackgroundFeedUpdatesStatus");
-//        compositeDisposable.add(feedSyncInteractor.shouldUpdateFeedsInBackground()
+//        compositeDisposable.add(feedSyncInteractor.isFeedSyncSchedulerEnabled()
 //                .observeOn(schedulersProvider.getMain())
 //                .subscribe(this::onGetBackgroundFeedUpdatesStatusSuccess,
 //                        this::onGetBackgroundFeedUpdatesStatusError));
@@ -283,7 +301,7 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
 
     public void enableBackgroundFeedUpdates() {
         Timber.d("enableBackgroundFeedUpdates");
-        compositeDisposable.add(feedSyncInteractor.enableBackgroundFeedUpdate()
+        compositeDisposable.add(feedSyncSchedulerInteractor.enableFeedSyncScheduler()
                 .observeOn(schedulersProvider.getMain())
                 .subscribe(this::onEnableBackgroundFeedUpdatesCompletion)
         );
@@ -296,7 +314,7 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
 
     public void disableBackgroundFeedUpdates() {
         Timber.d("disableBackgroundFeedUpdates");
-        compositeDisposable.add(feedSyncInteractor.disableBackgroundFeedUpdate()
+        compositeDisposable.add(feedSyncSchedulerInteractor.disableFeedSyncScheduler()
                 .observeOn(schedulersProvider.getMain())
                 .subscribe(this::onDisableBackgroundFeedUpdatesCompletion)
         );
@@ -307,8 +325,8 @@ public class FeedListPresenter extends MvpPresenter<FeedListView> {
     }
 
     private void observeShouldUpdateFeedsInBackground() {
-        Timber.d("observeShouldUpdateFeedsInBackground");
-        compositeDisposable.add(feedSyncInteractor.observeShouldUpdateFeedsInBackground()
+        Timber.d("observeIsFeedSyncSchedulerEnabled");
+        compositeDisposable.add(appSettingsInteractor.observeShouldUpdateFeedsInBackground()
                 .observeOn(schedulersProvider.getMain())
                 .subscribe(this::onObserveShouldUpdateFeedsInBackgroundNext, throwable -> {Timber.d(throwable);})
         );

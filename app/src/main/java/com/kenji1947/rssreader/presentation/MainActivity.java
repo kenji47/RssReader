@@ -1,6 +1,5 @@
 package com.kenji1947.rssreader.presentation;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -12,19 +11,14 @@ import android.widget.Toast;
 
 import com.kenji1947.rssreader.App;
 import com.kenji1947.rssreader.R;
-import com.kenji1947.rssreader.domain.interactors.feed.FeedUpdateInteractor;
 import com.kenji1947.rssreader.presentation.article_detail.ArticleDetailFragment;
 import com.kenji1947.rssreader.presentation.article_list.ArticleListArgumentHolder;
 import com.kenji1947.rssreader.presentation.article_list.ArticleListFragment;
-import com.kenji1947.rssreader.presentation.base.DummyActivity;
 import com.kenji1947.rssreader.presentation.common.BackButtonListener;
-import com.kenji1947.rssreader.presentation.common.ShowDialog;
 import com.kenji1947.rssreader.presentation.feed_list.FeedListFragment;
 import com.kenji1947.rssreader.presentation.new_feed.FeedNewDialog;
 import com.kenji1947.rssreader.presentation.new_feed.FeedNewFragment;
 import com.kenji1947.rssreader.presentation.settings.SettingsFragment;
-import com.kenji1947.rssreader.presentation.settings.SettingsPrefFragment;
-import com.squareup.leakcanary.LeakCanary;
 
 import javax.inject.Inject;
 

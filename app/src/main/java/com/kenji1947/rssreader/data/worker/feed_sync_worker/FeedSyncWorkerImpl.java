@@ -19,12 +19,13 @@ public class FeedSyncWorkerImpl implements FeedSyncWorker {
 
     @Override
     public void startFeedSync() {
+        //TODO Инжектировать сервис или интент
         context.startService(new Intent(context, FeedSyncService.class));
     }
 
     @Override
     public void cancelFeedSync() {
-        //TODO Доделать
+        //TODO Доделать отмену
         context.stopService(new Intent(context, FeedSyncService.class));
     }
 }

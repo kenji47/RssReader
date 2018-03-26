@@ -1,6 +1,6 @@
 package com.kenji1947.rssreader.di.presenter;
 
-import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_sceduler_presenter.FeedUpdateServicePresenter;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.FeedUpdateServicePresenter;
 import com.kenji1947.rssreader.di.application.AppComponent;
 
 import dagger.Component;

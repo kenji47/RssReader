@@ -7,6 +7,8 @@ import com.arellomobile.mvp.MvpPresenter;
 import com.kenji1947.rssreader.data.worker.error_handler.ErrorHandler;
 import com.kenji1947.rssreader.data.worker.preference.PreferenceManager;
 import com.kenji1947.rssreader.domain.interactors.feed.FeedSyncInteractor;
+import com.kenji1947.rssreader.domain.interactors.feed.FeedSyncSchedulerInteractor;
+import com.kenji1947.rssreader.domain.interactors.settings.AppSettingsInteractor;
 import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
 import javax.inject.Inject;
@@ -21,12 +23,14 @@ import timber.log.Timber;
 
 @InjectViewState
 public class SettingsPresenter extends MvpPresenter<SettingsView> {
-    private RxSchedulersProvider schedulersProvider;
-    private FeedSyncInteractor backgroundFeedUpdateInteractor;
-    private PreferenceManager preferenceManager;
-    private ErrorHandler errorHandler;
+
+    private RxSchedulersProvider rxSchedulersProvider;
+    private FeedSyncSchedulerInteractor feedSyncSchedulerInteractor;
+    private AppSettingsInteractor appSettingsInteractor;
     private Router router;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private ErrorHandler errorHandler;
+
 
     SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
@@ -48,12 +52,14 @@ public class SettingsPresenter extends MvpPresenter<SettingsView> {
     @Inject
     public SettingsPresenter(RxSchedulersProvider schedulersProvider,
                              FeedSyncInteractor backgroundFeedUpdateInteractor,
+                             FeedSyncSchedulerInteractor feedSyncSchedulerInteractor,
+                             AppSettingsInteractor appSettingsInteractor,
                              PreferenceManager preferenceManager,
                              ErrorHandler errorHandler,
                              Router router) {
-        this.schedulersProvider = schedulersProvider;
-        this.backgroundFeedUpdateInteractor = backgroundFeedUpdateInteractor;
-        this.preferenceManager = preferenceManager;
+        this.rxSchedulersProvider = schedulersProvider;
+        this.feedSyncSchedulerInteractor = feedSyncSchedulerInteractor;
+        this.appSettingsInteractor = appSettingsInteractor;
         this.errorHandler = errorHandler;
         this.router = router;
     }
@@ -63,29 +69,29 @@ public class SettingsPresenter extends MvpPresenter<SettingsView> {
         super.onFirstViewAttach();
         Timber.d("onFirstViewAttach");
         //preferenceManager.registerPreferenceChangeListener(preferenceChangeListener);
-        initSettings();
+        loadSettings();
     }
 
-    private void initSettings() {
-        backgroundFeedUpdateInteractor.getPreferencesData()
-                .observeOn(schedulersProvider.getMain())
+    private void loadSettings() {
+        appSettingsInteractor.getAppSettings()
+                .observeOn(rxSchedulersProvider.getMain())
                 .subscribe(preferences -> {
-                    getViewState().setPreferences(preferences);
+                    getViewState().setAppSettings(preferences);
                 });
     }
 
 
-    public void onEnableBackgroundUpdate(boolean update) {
-        (update ? backgroundFeedUpdateInteractor.enableBackgroundFeedUpdate()
-                : backgroundFeedUpdateInteractor.disableBackgroundFeedUpdate())
-                .observeOn(schedulersProvider.getMain())
-                .subscribe(() -> {Timber.d("onEnableBackgroundUpdate Complete " + update);});
+    public void setFeedSyncSchedulerStatus(boolean enabled) {
+        (enabled ? feedSyncSchedulerInteractor.enableFeedSyncScheduler()
+                : feedSyncSchedulerInteractor.disableFeedSyncScheduler())
+                .observeOn(rxSchedulersProvider.getMain())
+                .subscribe(() -> {Timber.d("setFeedSyncSchedulerStatus Complete " + enabled);});
     }
 
-    public void changeUpdateInterval(long intervalMillis) {
-        backgroundFeedUpdateInteractor.setUpdateFeedsInBackgroundInterval(intervalMillis)
-                .observeOn(schedulersProvider.getMain())
-                .subscribe(() -> {Timber.d("changeUpdateInterval Complete " + intervalMillis);});
+    public void setFeedSyncSchedulerInterval(long intervalMillis) {
+        appSettingsInteractor.setFeedSyncSchedulerInterval(intervalMillis)
+                .observeOn(rxSchedulersProvider.getMain())
+                .subscribe(() -> {Timber.d("setFeedSyncSchedulerInterval Complete " + intervalMillis);});
     }
 
     @Override

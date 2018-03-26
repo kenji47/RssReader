@@ -4,7 +4,7 @@ import com.kenji1947.rssreader.data.DataTestData;
 import com.kenji1947.rssreader.data.SchedulersTrampoline;
 import com.kenji1947.rssreader.data.TestUtils;
 import com.kenji1947.rssreader.data.worker.error_handler.ErrorHandler;
-import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_sceduler_presenter.FeedUpdateServiceView;
+import com.kenji1947.rssreader.data.worker.feed_sync_scheduler.job_scheduler.FeedUpdateServiceView;
 import com.kenji1947.rssreader.data.worker.resource_manager.ResourceManager;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.domain.exceptions.NoNetworkException;
@@ -34,11 +34,9 @@ import ru.terrakok.cicerone.result.ResultListener;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**

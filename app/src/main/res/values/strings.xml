@@ -15,6 +15,7 @@
     <string name="already_subscribed_message">You are already subscribed to this feed dummy :)</string>
     <string name="incorrect_feed_url_message">Incorrect feed URL, please check and try again</string>
 
+    <string name="notification_channel_feed_sync_name">Feed sync</string>
 
     <string name="notification_feed_updated_title">New articles!</string>
     <string name="notification_feed_updated_text">You have %1$s new articles. %2$s articles unread</string>

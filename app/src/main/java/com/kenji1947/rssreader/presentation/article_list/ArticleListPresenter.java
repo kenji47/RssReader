@@ -5,8 +5,10 @@ import com.arellomobile.mvp.MvpPresenter;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.interactors.article.ArticleFavouriteInteractor;
 import com.kenji1947.rssreader.domain.interactors.article.ArticleUnreadInteractor;
+import com.kenji1947.rssreader.domain.interactors.article.ArticleUpdateInteractor;
 import com.kenji1947.rssreader.domain.interactors.article.ArticlesCrudInteractor;
 import com.kenji1947.rssreader.domain.interactors.article.ObserveArticlesModificationInteractor;
+import com.kenji1947.rssreader.domain.interactors.feed.FeedUpdateInteractor;
 import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 import com.kenji1947.rssreader.presentation.Screens;
 
@@ -24,12 +26,16 @@ import timber.log.Timber;
 
 @InjectViewState
 public class ArticleListPresenter extends MvpPresenter<ArticleListView> {
+
     private long feedId;
     private boolean isFavModeOn;
     private List<Article> articleList;
+
+    private FeedUpdateInteractor feedUpdateInteractor;
     private ArticlesCrudInteractor articlesCrudInteractor;
     private ArticleFavouriteInteractor articleFavouriteInteractor;
     private ArticleUnreadInteractor articleUnreadInteractor;
+    private ArticleUpdateInteractor articleUpdateInteractor;
     private ObserveArticlesModificationInteractor observeArticleUpdatesInteractor;
     private RxSchedulersProvider schedulersProvider;
     private Router router;
@@ -37,17 +43,21 @@ public class ArticleListPresenter extends MvpPresenter<ArticleListView> {
 
     @Inject
     public ArticleListPresenter(long feedId, boolean isFavModeOn,
+                                FeedUpdateInteractor feedUpdateInteractor,
                                 ArticlesCrudInteractor articlesCrudInteractor,
                                 ArticleFavouriteInteractor articleFavouriteInteractor,
                                 ArticleUnreadInteractor articleUnreadInteractor,
+                                ArticleUpdateInteractor articleUpdateInteractor,
                                 ObserveArticlesModificationInteractor observeArticleUpdatesInteractor,
                                 RxSchedulersProvider schedulersProvider,
                                 Router router) {
         this.feedId = feedId;
         this.isFavModeOn = isFavModeOn;
+        this.feedUpdateInteractor = feedUpdateInteractor;
         this.articlesCrudInteractor = articlesCrudInteractor;
         this.articleFavouriteInteractor = articleFavouriteInteractor;
         this.articleUnreadInteractor = articleUnreadInteractor;
+        this.articleUpdateInteractor = articleUpdateInteractor;
         this.observeArticleUpdatesInteractor = observeArticleUpdatesInteractor;
         this.schedulersProvider = schedulersProvider;
         this.router = router;
@@ -104,6 +114,18 @@ public class ArticleListPresenter extends MvpPresenter<ArticleListView> {
                 });
     }
 
+    void updateArticles() {
+        //TODO check if
+        compositeDisposable.add(feedUpdateInteractor.updateFeedAndGetNewArticlesCount(feedId)
+                .doOnSubscribe(disposable -> {getViewState().showProgress(true);})
+                .doAfterTerminate(() -> {getViewState().showProgress(false);})
+                .observeOn(schedulersProvider.getMain())
+               .subscribe(
+                       newArticlesCount -> {Timber.d("updateArticles Success " + newArticlesCount);
+                       getViewState().showNewArticlesCountMessage(newArticlesCount);},
+                       throwable -> {}));
+    }
+
     void getArticlesForFeedObserve(long feedId) {
         this.feedId = feedId;
         articlesCrudInteractor.getArticlesAndObserve(feedId)
@@ -111,6 +133,7 @@ public class ArticleListPresenter extends MvpPresenter<ArticleListView> {
 //                .doAfterTerminate(() -> {getViewState().showProgress(false);})
                 .observeOn(schedulersProvider.getMain())
                 .subscribe(articles -> {
+                    Timber.d("getArticlesForFeedObserve " + articles.size());
                     articleList = articles;
                     getViewState().showArticles(articles);
                 });

@@ -8,7 +8,7 @@ import com.kenji1947.rssreader.data.worker.preference.PreferenceManager;
 import com.kenji1947.rssreader.domain.entities.Article;
 import com.kenji1947.rssreader.domain.entities.Feed;
 import com.kenji1947.rssreader.domain.entities.SearchedFeed;
-import com.kenji1947.rssreader.domain.repository.AppPreferences;
+import com.kenji1947.rssreader.domain.entities.AppSettings;
 import com.kenji1947.rssreader.domain.repository.FeedRepository;
 import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
@@ -19,6 +19,7 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 import timber.log.Timber;
 
@@ -32,7 +33,10 @@ public class FeedRepositoryImpl implements FeedRepository {
     private PreferenceManager preferenceUtils;
     private FetchFeedApiService feedService;
     private SearchFeedApiService searchFeedApiService;
+
+    //TODO Delete
     private Subject<Boolean> updateFeedsInBackgroundSubject;
+    private Subject<Integer> feedSyncCompleteSubject = PublishSubject.create();
 
     public FeedRepositoryImpl(FetchFeedApiService feedService,
                               FeedDao feedDao,
@@ -47,7 +51,7 @@ public class FeedRepositoryImpl implements FeedRepository {
 
 
 //        this.updateFeedsInBackgroundSubject =
-//                BehaviorSubject.createDefault(preferenceUtils.shouldUpdateFeedsInBackground());
+//                BehaviorSubject.createDefault(preferenceUtils.isFeedSyncSchedulerEnabled());
         this.updateFeedsInBackgroundSubject = BehaviorSubject.create();
 
         //TODO Для чего
@@ -56,7 +60,7 @@ public class FeedRepositoryImpl implements FeedRepository {
     }
 
     private void initUpdateFeedsInBackgroundSubject() {
-        shouldUpdateFeedsInBackground().subscribe(aBoolean -> {
+        isFeedSyncSchedulerEnabled().subscribe(aBoolean -> {
             Timber.d("initUpdateFeedsInBackgroundSubject " + aBoolean);
             updateFeedsInBackgroundSubject.onNext(aBoolean);
         });
@@ -155,51 +159,66 @@ public class FeedRepositoryImpl implements FeedRepository {
         return Single.defer(() -> feedService.fetchFeed(feedUrl));
     }
 
-    //---
-    //TODO Должен использоваться только интеракторами
+    //moved
     @Override
-    public Single<Boolean> shouldUpdateFeedsInBackground() {
-        return Single.fromCallable(preferenceUtils::shouldUpdateFeedsInBackground)
+    public Single<Boolean> isFeedSyncSchedulerEnabled() {
+        return Single.fromCallable(preferenceUtils::isFeedSyncSchedulerEnabled)
                 .subscribeOn(schedulersProvider.getIo());
     }
-
+    //moved
     @Override
-    public Completable setShouldUpdateFeedsInBackground(boolean shouldUpdate) {
-        Timber.d("setShouldUpdateFeedsInBackground " + shouldUpdate);
+    public Completable setFeedSyncSchedulerStatus(boolean shouldUpdate) {
+        Timber.d("setFeedSyncSchedulerStatus " + shouldUpdate);
         //TODO Notify
         return Completable.fromAction(() -> {
             updateFeedsInBackgroundSubject.onNext(shouldUpdate); //TODO OnNext в фоновом?
-            preferenceUtils.setShouldUpdateFeedsInBackground(shouldUpdate);
+            preferenceUtils.setFeedSyncSchedulerStatus(shouldUpdate);
         })
                 .subscribeOn(schedulersProvider.getIo());
     }
-    //---
+    //moved
     @Override
-    public Completable setUpdateFeedsInBackgroundInterval(long intervalMillis) {
-        Timber.d("setUpdateFeedsInBackgroundInterval " + intervalMillis);
-        return Completable.fromAction(() -> preferenceUtils.setUpdateFeedsInBackgroundInterval(intervalMillis))
+    public Completable setFeedSyncSchedulerInterval(long intervalMillis) {
+        Timber.d("setFeedSyncSchedulerInterval " + intervalMillis);
+        return Completable.fromAction(() -> preferenceUtils.setFeedSyncSchedulerInterval(intervalMillis))
+                .subscribeOn(schedulersProvider.getIo());
+    }
+    //moved
+    @Override
+    public Single<Long> getFeedSyncSchedulerInterval() {
+        return Single.fromCallable(preferenceUtils::getFeedSyncSchedulerInterval)
                 .subscribeOn(schedulersProvider.getIo());
     }
 
+    //Was used by FeedListScreen appbar title
+    //moved
     @Override
-    public Single<Long> getUpdateFeedsInBackgroundInterval() {
-        return Single.fromCallable(preferenceUtils::getFeedUpdateServicePeriod)
-                .subscribeOn(schedulersProvider.getIo());
-    }
-
-    @Override
-    public Observable<Boolean> observeShouldUpdateFeedsInBackground() {
+    public Observable<Boolean> observeIsFeedSyncSchedulerEnabled() {
         //TODO throttleFirst. How to subscribe to subject
         //TODO throttleFirst нужно накладывать только на кнопки-источники
         return updateFeedsInBackgroundSubject.throttleFirst(300L, TimeUnit.MILLISECONDS)
                 .subscribeOn(schedulersProvider.getIo());
     }
+
+    //---
     @Override
-    public Single<AppPreferences> getPreferencesData() {
+    public Observable<Integer> observeFeedSyncComplete() {
+        return feedSyncCompleteSubject.throttleFirst(300L, TimeUnit.MILLISECONDS)
+                .subscribeOn(schedulersProvider.getIo());
+    }
+
+    @Override
+    public void notifyFeedSyncComplete(int newArticlesCount) {
+        feedSyncCompleteSubject.onNext(newArticlesCount);
+    }
+
+    //moved
+    @Override
+    public Single<AppSettings> getAppSettings() {
         return Single.fromCallable(() ->
-                new AppPreferences(
-                        preferenceUtils.shouldUpdateFeedsInBackground(),
-                        preferenceUtils.getFeedUpdateServicePeriod()
+                new AppSettings(
+                        preferenceUtils.isFeedSyncSchedulerEnabled(),
+                        preferenceUtils.getFeedSyncSchedulerInterval()
                 ))
                 .subscribeOn(schedulersProvider.getIo());
     }

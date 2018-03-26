@@ -4,7 +4,7 @@ import com.kenji1947.rssreader.data.SchedulersTrampoline;
 import com.kenji1947.rssreader.data.connectivity.ConnectivityReceiver;
 import com.kenji1947.rssreader.domain.exceptions.FeedAlreadySubscribedException;
 import com.kenji1947.rssreader.domain.exceptions.NoNetworkException;
-import com.kenji1947.rssreader.domain.interactors.feed.CreateNewFeedInteractor;
+import com.kenji1947.rssreader.domain.interactors.feed.SubscribeToFeedInteractor;
 import com.kenji1947.rssreader.domain.repository.FeedRepository;
 import com.kenji1947.rssreader.domain.util.RxSchedulersProvider;
 
@@ -32,14 +32,14 @@ public class CreateFeedInteractorTest {
 
     private RxSchedulersProvider schedulersProvider = new SchedulersTrampoline();
 
-    private CreateNewFeedInteractor interactor;
+    private SubscribeToFeedInteractor interactor;
 
     private TestObserver testObserver;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        interactor = new CreateNewFeedInteractor(feedRepository, connectivityReceiver, schedulersProvider);
+        interactor = new SubscribeToFeedInteractor(feedRepository, connectivityReceiver, schedulersProvider);
         testObserver = new TestObserver();
     }
 
